@@ -262,7 +262,10 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         .bInheritHandle = 1    ' get inheritable pipe handles
     End With
   
-    If CreatePipe(hPipeRead, hPipeWrite1, sa, BUFSIZE) = 0 Then Exit Function
+    If CreatePipe(hPipeRead, hPipeWrite1, sa, BUFSIZE) = 0 Then
+        GetCommandOutput = 1
+        Exit Function
+    End If
     hCurProcess = GetCurrentProcess()
   
     ' Replace our inheritable read handle with an non-inheritable. Not that it
@@ -285,7 +288,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
                 Call CloseHandle(hPipeRead)
                 Call CloseHandle(hPipeWrite1)
                 If hPipeWrite2 Then Call CloseHandle(hPipeWrite2)
-          
+                GetCommandOutput = 1
                 Exit Function
             End If
             Call DuplicateHandle(hCurProcess, hPipeReadSep, hCurProcess, hPipeReadSep, 0&, _

@@ -1558,7 +1558,7 @@ Public Function AddSingleFile(strName As String) As String
             strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strName & """"
             
             If mnuSkipTags.Checked Or mnuReCalcTags.Checked Or mnuSkipTagsWhileAdding.Checked Then
-                lngRetVal = 0
+                lngRetVal = 1
             Else
                 If blnShowFileStatus Then
                     lngRetVal = GetCommandOutput(strTagInfo, strCmdCheckTag, strAppPath, True, False, False, 100, , Me.txtProgWatch, False)
@@ -1567,7 +1567,7 @@ Public Function AddSingleFile(strName As String) As String
                 End If
             End If
             
-            If (lngRetVal = 1) Then
+            If (lngRetVal = 0) Then
                 
                 intLF = InStr(strTagInfo, vbCrLf)
                 arrVals = Split(Mid$(strTagInfo, intLF + 2), vbTab)
@@ -2099,7 +2099,7 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
     End If
     Me.prgFile.Value = 0
     
-    If (lngRetVal <> 1) And (Not blnCancel) Then
+    If (lngRetVal <> 0) And (Not blnCancel) Then
         If strBlah <> "" Then
             LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
         Else
@@ -2335,7 +2335,7 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                 End If
                 Me.prgFile.Value = 0
                 
-                If (lngRetVal <> 1) And (Not blnCancel) Then
+                If (lngRetVal <> 0) And (Not blnCancel) Then
                     If strBlah <> "" Then
                         LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
                     Else
@@ -2516,7 +2516,7 @@ Private Sub AlbumGain()
                     ElseIf InStr(LCase$(strBlah), "can't open") Then
                         LogErr Replace(GetLocalString("frmMain.LCL_MODIFY_ERROR", _
                             "Can't modify file %%filename%%"), "%%filename%%", itmX.Text)
-                    ElseIf lngRetVal <> 1 Then
+                    ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
                                 LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
@@ -2730,7 +2730,7 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
                     LogErr Replace(GetLocalString("frmMain.LCL_NOT_STEREO", _
                         "%%filename%% is not a stereo or dual-channel mp3"), _
                         "%%filename%%", itmX.Text & vbCrLf)
-                ElseIf lngRetVal <> 1 Then
+                ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
                             LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
@@ -3107,7 +3107,7 @@ Private Sub RadioGain()
                     ElseIf InStr(LCase$(strBlah), "can't open") Then
                         LogErr Replace(GetLocalString("frmMain.LCL_MODIFY_ERROR", _
                             "Can't modify file %%filename%%"), "%%filename%%", itmX.Text)
-                    ElseIf lngRetVal <> 1 Then
+                    ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
                                 LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
@@ -3439,7 +3439,7 @@ Private Sub MaxNoClipGain()
                     ElseIf InStr(LCase$(strBlah), "can't open") Then
                         LogErr Replace(GetLocalString("frmMain.LCL_MODIFY_ERROR", _
                             "Can't modify file %%filename%%"), "%%filename%%", itmX.Text)
-                    ElseIf lngRetVal <> 1 Then
+                    ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
                                 LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
@@ -5718,7 +5718,7 @@ On Error GoTo DeleteFileTags_Error
                 ElseIf InStr(LCase$(strBlah), "can't open") Then
                     LogErr Replace(GetLocalString("frmMain.LCL_MODIFY_ERROR", _
                         "Can't modify file %%filename%%"), "%%filename%%", itmX.Text)
-                ElseIf lngRetVal <> 1 Then
+                ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
                             LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
@@ -5810,7 +5810,7 @@ On Error GoTo UndoFileGain_Error
                     LogErr Replace(GetLocalString("frmMain.LCL_NOT_STEREO", _
                         "%%filename%% is not a stereo or dual-channel mp3"), _
                         "%%filename%%", itmX.Text & vbCrLf)
-                ElseIf lngRetVal <> 1 Then
+                ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
                             LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
