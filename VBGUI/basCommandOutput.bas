@@ -93,7 +93,7 @@ Private Type PROCESS_INFORMATION
   dwThreadId As Long
 End Type
 
-Private Const BUFSIZE = 1024      ' pipe buffer size
+Private Const BUFSIZE = 1048576      ' pipe buffer size: 1M
 
 ''''''''''''''''''''
 '''   Declares   '''
