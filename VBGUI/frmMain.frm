@@ -3792,8 +3792,6 @@ Private Sub Form_Load()
         End If
     End If
     
-    blnHaveUnicode = False
-    
     Call SetupUnicodeFind
     
     blnAddingUndoSpace = False
