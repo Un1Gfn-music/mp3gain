@@ -1510,12 +1510,15 @@ Public Function AddSingleFile(strName As String) As String
         Else
             strNameShort = strName
         End If
-    Else
-        strNameShort = strName
     End If
     
     On Error Resume Next
-    faReadOnlyCheck = (GetAttr(strNameShort) And vbReadOnly)
+    If blnHaveUnicode Then
+        faReadOnlyCheck = (GetAttr(strNameShort) And vbReadOnly)
+    Else
+        faReadOnlyCheck = (GetAttr(strName) And vbReadOnly)
+    End If
+    
     If Err.Number Then Exit Function 'Can't check file
     On Error GoTo AddSingleFile_Error
     
@@ -1559,7 +1562,11 @@ Public Function AddSingleFile(strName As String) As String
             DoEvents
         End If
         
-        strNewKeyVal = strNameShort
+        If blnHaveUnicode Then
+            strNewKeyVal = strNameShort
+        Else
+            strNewKeyVal = LCase$(strName)
+        End If
         
         On Error Resume Next
         Set gitmX = lstvMain.ListItems.Add(, strNewKeyVal, strName)
@@ -1586,7 +1593,11 @@ Public Function AddSingleFile(strName As String) As String
             
             blnHaveTag = False
             
-            strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strNewKeyVal & """"
+            If blnHaveUnicode Then
+                strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strNewKeyVal & """"
+            Else
+                strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strName & """"
+            End If
             
             If mnuSkipTags.Checked Or mnuReCalcTags.Checked Or mnuSkipTagsWhileAdding.Checked Then
                 lngRetVal = 0
@@ -1628,7 +1639,7 @@ Public Function AddSingleFile(strName As String) As String
             End If
             
             fileInfo.ModifydBGain = dblGainAdjust
-            fileInfo.mLongPathName = strName
+            If blnHaveUnicode Then fileInfo.mLongPathName = strName
             flsMaster.Add fileInfo, strNewKeyVal
             
             If blnHaveTag Then DispJunk gitmX, fileInfo
@@ -2130,7 +2141,11 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
         If (Not mnuSelectedFiles.Checked) Or (subItmX.Checked) Then
             If subItmX.ListSubItems(glPath) = strAlbum Then
                 If subItmX.Tag <> "X" Then subItmX.Tag = "Y"
-                strCmd = strCmd & " """ & subItmX.Key & """"
+                If blnHaveUnicode Then
+                    strCmd = strCmd & " """ & subItmX.Key & """"
+                Else
+                    strCmd = strCmd & " """ & subItmX.Text & """"
+                End If
             Else
                 If subItmX.Tag <> "X" Then subItmX.Tag = "N"
             End If
@@ -2367,7 +2382,11 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                 For Each itmX In lstvMain.ListItems
                     If (Not mnuSelectedFiles.Checked) Or (itmX.Checked) Then
                         If itmX.Tag <> "X" Then itmX.Tag = "Y"
-                        strCmd = strCmd & " """ & itmX.Key & """"
+                        If blnHaveUnicode Then
+                            strCmd = strCmd & " """ & itmX.Key & """"
+                        Else
+                            strCmd = strCmd & " """ & itmX.Text & """"
+                        End If
                     Else
                         If itmX.Tag <> "X" Then itmX.Tag = "N"
                     End If
@@ -2550,7 +2569,11 @@ Private Sub AlbumGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Key & """"
+                    If blnHaveUnicode Then
+                        strCmd = strCmd & """" & itmX.Key & """"
+                    Else
+                        strCmd = strCmd & """" & itmX.Text & """"
+                    End If
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -2758,7 +2781,11 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
                     strCmd = strCmd & "/s s "
                 End If
                 
-                strCmd = strCmd & """" & itmX.Key & """"
+                If blnHaveUnicode Then
+                    strCmd = strCmd & """" & itmX.Key & """"
+                Else
+                    strCmd = strCmd & """" & itmX.Text & """"
+                End If
                 
                 Refresh
                 strBlah = ""
@@ -2877,9 +2904,17 @@ Private Sub RadioSingleFile(itmX As ListItem, mp3Inf As Mp3Info)
     
     
     If blnShowFileStatus Then
-        lngRetVal = GetCommandOutput(strBlah, strCmd & """" & itmX.Key & """", strAppPath, True, False, False, 100, , Me.txtProgWatch)
+        If blnHaveUnicode Then
+            lngRetVal = GetCommandOutput(strBlah, strCmd & """" & itmX.Key & """", strAppPath, True, False, False, 100, , Me.txtProgWatch)
+        Else
+            lngRetVal = GetCommandOutput(strBlah, strCmd & """" & itmX.Text & """", strAppPath, True, False, False, 100, , Me.txtProgWatch)
+        End If
     Else
-        lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Key & """", strAppPath, True, False, False, 100)
+        If blnHaveUnicode Then
+            lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Key & """", strAppPath, True, False, False, 100)
+        Else
+            lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Text & """", strAppPath, True, False, False, 100)
+        End If
     End If
     
     If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
@@ -3147,7 +3182,11 @@ Private Sub RadioGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Key & """"
+                    If blnHaveUnicode Then
+                        strCmd = strCmd & """" & itmX.Key & """"
+                    Else
+                        strCmd = strCmd & """" & itmX.Text & """"
+                    End If
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -3481,7 +3520,11 @@ Private Sub MaxNoClipGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Key & """"
+                    If blnHaveUnicode Then
+                        strCmd = strCmd & """" & itmX.Key & """"
+                    Else
+                        strCmd = strCmd & """" & itmX.Text & """"
+                    End If
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -3806,7 +3849,7 @@ Private Sub Form_Load()
         End If
     End If
     
-    Call SetupUnicodeFind
+    If blnHaveUnicode Then Call SetupUnicodeFind
     
     blnAddingUndoSpace = False
     
@@ -4447,7 +4490,11 @@ Private Sub lstvMain_DblClick()
     
     For Each itmX In lstvMain.ListItems
         If itmX.Selected Then
-            Call ShellExecute(0&, vbNullString, itmX.Key, vbNullString, vbNullString, vbNormalFocus)
+            If blnHaveUnicode Then
+                Call ShellExecute(0&, vbNullString, itmX.Key, vbNullString, vbNullString, vbNormalFocus)
+            Else
+                Call ShellExecute(0&, vbNullString, itmX.Text, vbNullString, vbNullString, vbNormalFocus)
+            End If
         End If
     Next
     
@@ -5362,9 +5409,16 @@ Private Sub txtAlbumMonitor_Change()
                     If Not blnCancel And (UBound(arrStuff) > -1) Then
                         LogErr GetLocalString("frmMain.LCL_ERROR_ANALYZING", "Error while analyzing") & ": " & arrStuff(0)
                         For i = 1 To lstvMain.ListItems.Count
-                            If lstvMain.ListItems(i).Key = arrStuff(0) Then
-                                lstvMain.ListItems(i).Tag = "X"
-                                Exit For
+                            If blnHaveUnicode Then
+                                If lstvMain.ListItems(i).Key = arrStuff(0) Then
+                                    lstvMain.ListItems(i).Tag = "X"
+                                    Exit For
+                                End If
+                            Else
+                                If lstvMain.ListItems(i).Text = arrStuff(0) Then
+                                    lstvMain.ListItems(i).Tag = "X"
+                                    Exit For
+                                End If
                             End If
                         Next i
                     End If
@@ -5391,9 +5445,16 @@ Private Sub txtAlbumMonitor_Change()
                             UpdateCaptionPercentage CLng((prgTot.Value * 100) / prgTot.Max)
                         End If
                         For i = 1 To lstvMain.ListItems.Count
-                            If lstvMain.ListItems(i).Key = arrStuff(0) Then
-                                Set itmX = lstvMain.ListItems(i)
-                                i = lstvMain.ListItems.Count
+                            If blnHaveUnicode Then
+                                If lstvMain.ListItems(i).Key = arrStuff(0) Then
+                                    Set itmX = lstvMain.ListItems(i)
+                                    i = lstvMain.ListItems.Count
+                                End If
+                            Else
+                                If lstvMain.ListItems(i).Text = arrStuff(0) Then
+                                    Set itmX = lstvMain.ListItems(i)
+                                    i = lstvMain.ListItems.Count
+                                End If
                             End If
                         Next i
                         If itmX Is Nothing Then
@@ -5766,7 +5827,11 @@ On Error GoTo DeleteFileTags_Error
                     strCmd = strCmd & "/p "
                 End If
                 
-                strCmd = strCmd & """" & itmX.Key & """"
+                If blnHaveUnicode Then
+                    strCmd = strCmd & """" & itmX.Key & """"
+                Else
+                    strCmd = strCmd & """" & itmX.Text & """"
+                End If
                 
                 Refresh
                 strBlah = ""
@@ -5855,7 +5920,11 @@ On Error GoTo UndoFileGain_Error
                     strCmd = strCmd & "/f "
                 End If
                                 
-                strCmd = strCmd & """" & itmX.Key & """"
+                If blnHaveUnicode Then
+                    strCmd = strCmd & """" & itmX.Key & """"
+                Else
+                    strCmd = strCmd & """" & itmX.Text & """"
+                End If
                 
                 Refresh
                 strBlah = ""

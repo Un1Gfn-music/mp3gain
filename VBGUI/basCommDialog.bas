@@ -106,7 +106,6 @@ Public Function ahtCommonFileOpenSave( _
 ' Out:
 ' Return Value: Either Null or the selected filename
 Dim OFN As tagOPENFILENAME
-'Dim strFileName() As Byte
 Dim strFileName As String
 Dim strFileTitle As String
 Dim fResult As Boolean
@@ -123,7 +122,6 @@ Dim fResult As Boolean
     ' Allocate string space for the returned strings.
     '--Glen Sawyer Increased buffer size
     strFileName = Left$(FileName & String$(26001, 0), 26001)
-'    ReDim strFileName(0 To 52002) As Byte
     strFileTitle = String$(26001, 0)
     ' Set up the data structure before you call the function
     If Not frmMain.blnHaveUnicode Then
@@ -138,7 +136,6 @@ Dim fResult As Boolean
         .strFilter = StrPtr(Filter)
         .nFilterIndex = FilterIndex
         .strFile = StrPtr(strFileName)
-'        .nMaxFile = 26000
         .nMaxFile = Len(strFileName) - 1
         .strFileTitle = StrPtr(strFileTitle)
         .nMaxFileTitle = Len(strFileTitle) - 1

@@ -52,7 +52,7 @@ Private Declare Function SHGetPathFromIDListW Lib "shell32" (ByVal pidList As Lo
 Private Declare Function lstrcat Lib "kernel32" Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Long
 
 Private Type BrowseInfo
-  hwndOwner      As Long
+  hWndOwner      As Long
   pIDLRoot       As Long
   pszDisplayName As Long
   lpszTitle      As Long
@@ -76,7 +76,7 @@ Public Function BrowseForFolder(owner As Form, Title As String, StartDir As Stri
 
   szTitle = Title
   With tBrowseInfo
-    .hwndOwner = owner.hWnd
+    .hWndOwner = owner.hWnd
     .lpszTitle = lstrcat(szTitle, "")
     .ulFlags = BIF_RETURNONLYFSDIRS + BIF_DONTGOBELOWDOMAIN + BIF_STATUSTEXT
     .lpfnCallback = GetAddressofFunction(AddressOf BrowseCallbackProc)  'get address of function.
