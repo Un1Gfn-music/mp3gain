@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmMain 
    Caption         =   "MP3 Gain"
    ClientHeight    =   6405
@@ -4080,27 +4080,27 @@ Private Sub Form_Load()
     lstvMain.ColumnHeaders.Add 1, "chPathFile", _
         GetLocalString("frmMain.LCL_COLUMN_PATH_FILE", "Path\File")
         lstvMain.ColumnHeaders.Add 2, "chVolume", _
-        GetLocalString("frmMain.LCL_COLUMN_VOLUME", "Volume")
+        GetLocalString("frmMain.LCL_COLUMN_VOLUME", "Volume"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 3, "chClip", _
-        GetLocalString("frmMain.LCL_COLUMN_CLIPPING", "clipping")
+        GetLocalString("frmMain.LCL_COLUMN_CLIPPING", "clipping"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 4, "chRadioGain", _
-        GetLocalString("frmMain.LCL_COLUMN_RADIO_GAIN", "Track Gain")
+        GetLocalString("frmMain.LCL_COLUMN_RADIO_GAIN", "Track Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 5, "chRadioClip", _
-        GetLocalString("frmMain.LCL_COLUMN_RADIO_CLIP", "clip(Track)")
+        GetLocalString("frmMain.LCL_COLUMN_RADIO_CLIP", "clip(Track)"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 6, "chMaxNoClip", _
-        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_NOCLIP", "Max Noclip Gain")
+        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_NOCLIP", "Max Noclip Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 7, "chAlbumVolume", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_VOLUME", "Album Volume")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_VOLUME", "Album Volume"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 8, "chAlbumGain", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_GAIN", "Album Gain")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_GAIN", "Album Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 9, "chAlbumClip", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_CLIP", "clip(Album)")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_CLIP", "clip(Album)"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 10, "chPath", _
         GetLocalString("frmMain.LCL_COLUMN_PATH", "Path")
         lstvMain.ColumnHeaders.Add 11, "chFile", _
         GetLocalString("frmMain.LCL_COLUMN_FILE", "File")
         lstvMain.ColumnHeaders.Add 12, "chMaxAmp", _
-        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_AMPLITUDE", "Curr Max Amp")
+        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_AMPLITUDE", "Curr Max Amp"), , lvwColumnRight
     
     intDefOrder = GetSetting("MP3GainAnalysis", "StartUp", "PathFileDisplay", PATHFILE)
     Select Case intDefOrder
