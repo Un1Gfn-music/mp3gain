@@ -126,9 +126,11 @@ Dim fResult As Boolean
 '    ReDim strFileName(0 To 52002) As Byte
     strFileTitle = String$(26001, 0)
     ' Set up the data structure before you call the function
-    If Not (OpenFile And frmMain.blnHaveUnicode) Then
+    If Not frmMain.blnHaveUnicode Then
         Filter = StrConv(Filter, vbFromUnicode)
         InitialDir = StrConv(InitialDir, vbFromUnicode)
+        DialogTitle = StrConv(DialogTitle, vbFromUnicode)
+        strFileName = StrConv(strFileName, vbFromUnicode)
     End If
     With OFN
         .lStructSize = Len(OFN)
