@@ -130,7 +130,7 @@ Private Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" ( _
   ByVal bInheritHandles As Long, _
   ByVal dwCreationFlags As Long, _
   lpEnvironment As Any, _
-  ByVal lpCurrentDriectory As String, _
+  ByVal lpCurrentDirectory As String, _
   lpStartupInfo As STARTUPINFO, _
   lpProcessInformation As PROCESS_INFORMATION) As Long
 

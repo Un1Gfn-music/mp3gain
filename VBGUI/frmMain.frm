@@ -1562,7 +1562,7 @@ Public Function AddSingleFile(strName As String) As String
             DoEvents
         End If
         
-        strNewKeyVal = LCase$(strNameShort)
+        strNewKeyVal = strNameShort
         
         On Error Resume Next
         Set gitmX = lstvMain.ListItems.Add(, strNewKeyVal, strName)
