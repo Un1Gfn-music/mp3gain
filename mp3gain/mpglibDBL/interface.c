@@ -195,7 +195,7 @@ void copy_mp(PMPSTR mp,int size,unsigned char *ptr)
   }
 }
 
-char VBRTag[4] = "Xing";
+char VBRTag[5] = "Xing";
 
 static int ExtractI4(unsigned char *buf)
 {
