@@ -604,6 +604,7 @@ Begin VB.Form frmMain
          End
          Begin VB.Menu mnuDeleteTags 
             Caption         =   "Remove Tags from files"
+            Enabled         =   0   'False
          End
       End
       Begin VB.Menu mnuLogs 
@@ -4742,6 +4743,8 @@ Private Sub mnuLanguage_Click(Index As Integer)
     mnuPopupConstantGain.Caption = mnuConstantGain.Caption
     mnuPopupMaxNoclipGain.Caption = mnuMaxNoClipGain.Caption
     mnuPopupGroupNoclip.Caption = mnuGroupNoClip.Caption
+    mnuPopupRemoveTags.Caption = mnuDeleteTags.Caption
+    mnuPopupUndoGain.Caption = mnuUndoGain.Caption
     
     diffProg = lblFileProg.Left
     If (lblTotProg.Left < diffProg) Then diffProg = lblTotProg.Left

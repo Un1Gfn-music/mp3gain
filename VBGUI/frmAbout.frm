@@ -421,7 +421,7 @@ Private Sub Label6_DragDrop(Source As Control, X As Single, Y As Single)
    
    If Source Is Label6 Then
       With Label6
-         Call HyperJump("mailto:" & .Caption)
+         Call HyperJump("mailto:" & .Caption & "?subject=MP3Gain: ")
          .Font.Underline = False
          '.ForeColor = vbBlack
       End With
