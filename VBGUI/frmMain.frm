@@ -1839,8 +1839,8 @@ Private Sub AddFiles()
     blnAddAllReadOnly = False
     blnCancel = False
     
-    strFilter = GetLocalString("frmMain.LCL_OPEN_FILE_FILTER1", "MP3 files/lists") & _
-        " (*.mp3;*.m3u)" & vbNullChar & "*.mp3;*.m3u" & vbNullChar & _
+    strFilter = GetLocalString("frmMain.LCL_OPEN_FILE_FILTER1", "MP3/AAC files/lists") & _
+        " (*.mp3;*.m3u;*.m4a;*.mp4)" & vbNullChar & "*.mp3;*.m3u;*.m4a;*.mp4" & vbNullChar & _
         GetLocalString("frmMain.LCL_OPEN_FILE_FILTER2", "All files") & _
         " (*.*)" & vbNullChar & "*.*" & vbNullChar
     
@@ -1897,6 +1897,7 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
     Dim strCheck As String
     Dim intYNC As Integer
     Dim faCur As Long
+    Dim strExtensionCheck As String
     
     If blnCancel Then Exit Sub
     
@@ -1915,15 +1916,18 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
                 If faCur = vbDirectory Then
                     colFolderList.Add strPath & strFile & "\"
                 Else
-                    If (faCur <> -1) And (LCase$(Right$(strFile, 4)) = ".mp3") Then
-                        AddSingleFile strPath & strFile
+                    If (faCur <> -1) Then
+                        strExtensionCheck = LCase$(Right$(strFile, 4))
+                        If strExtensionCheck = ".mp3" Or strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4" Then
+                            AddSingleFile strPath & strFile
+                        End If
                     End If
                 End If
             End If
             strFile = Dir
         Wend
     Else
-        strFile = Dir(strPath & "*.mp3", vbNormal Or vbHidden Or _
+        strFile = Dir(strPath & "*.mp3;*.m4a;*.mp4", vbNormal Or vbHidden Or _
             vbReadOnly Or vbArchive Or vbSystem)
         While (strFile <> "") And Not blnCancel
             AddSingleFile strPath & strFile
@@ -1999,6 +2003,7 @@ Private Sub AddM3U(strM3UFile As String)
     Dim strFile As String
     Dim strM3UPath As String
     Dim strM3UDrive As String
+    Dim strExtensionCheck As String
     
     intFileNum = FreeFile
     strM3UPath = Left$(strM3UFile, InStrRev(strM3UFile, "\"))
@@ -2008,7 +2013,8 @@ Private Sub AddM3U(strM3UFile As String)
     Do While Not EOF(intFileNum)
         Line Input #intFileNum, strLine
         If Left$(strLine, 1) <> "#" Then
-            If LCase$(Right$(strLine, 4)) = ".mp3" Then
+            strExtensionCheck = LCase$(Right$(strLine, 4))
+            If strExtensionCheck = ".mp3" Or strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4" Then
                 strLine = CleanOutRelativePathInfo(strLine)
                 If (Mid$(strLine, 2, 1) = ":") Or (Left$(strLine, 2) = "\\") Then
                     AddSingleFile (strLine)
@@ -5542,6 +5548,12 @@ Public Sub AddListOfFiles(arrInputFiles() As String, strListDrive As String, str
 
         Select Case LCase$(Right$(flFormat, 4))
         Case ".mp3"
+            flFormat = CleanOutRelativePathInfo(flFormat)
+            AddSingleFile (flFormat)
+        Case ".m4a"
+            flFormat = CleanOutRelativePathInfo(flFormat)
+            AddSingleFile (flFormat)
+        Case ".mp4"
             flFormat = CleanOutRelativePathInfo(flFormat)
             AddSingleFile (flFormat)
         Case ".m3u"
