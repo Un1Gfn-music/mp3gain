@@ -41,7 +41,7 @@ AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Snelg Enterprises"
 VersionFileDescription="MP3Gain GUI"
-VersionLegalCopyright="Copyright © 2003 Glen Sawyer"
+VersionLegalCopyright="Copyright © 2004 Glen Sawyer"
 VersionProductName="MP3Gain GUI"
 CondComp="GLENDEBUG = 0"
 CompilationType=0

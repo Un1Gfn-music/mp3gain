@@ -748,6 +748,12 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuPopupRemoveTags 
          Caption         =   "Remove Tags from files"
       End
+      Begin VB.Menu mnuSep24 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuPopupPlayFile 
+         Caption         =   "Play mp3 file"
+      End
    End
    Begin VB.Menu mPopupSys 
       Caption         =   "&SysTray"
@@ -946,7 +952,7 @@ Private Const VER_PLATFORM_WIN32_NT = 2
 
 Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" _
   (lpVersionInformation As OSVERSIONINFO) As Long
-
+   
 Private Sub modTrayToolTip(strNewTip As String)
     nid.szTip = strNewTip & vbNullChar
     If mnuSysTray.Checked And Me.WindowState = vbMinimized Then
@@ -4428,6 +4434,17 @@ lstvMain_ColumnClick_Error:
     HandleError "lstvMain_ColumnClick"
 End Sub
 
+Private Sub lstvMain_DblClick()
+    Dim itmX As ListItem
+    
+    For Each itmX In lstvMain.ListItems
+        If itmX.Selected Then
+            Call ShellExecute(0&, vbNullString, itmX.Key, vbNullString, vbNullString, vbNormalFocus)
+        End If
+    Next
+    
+End Sub
+
 Private Sub lstvMain_KeyDown(KeyCode As Integer, Shift As Integer)
     On Error GoTo lstvMain_KeyDown_Error
     Dim itmX As ListItem
@@ -5015,6 +5032,10 @@ End Sub
 
 Private Sub mnuPopupMaxNoclipGain_Click()
     mnuMaxNoClipGain_Click
+End Sub
+
+Private Sub mnuPopupPlayFile_Click()
+    lstvMain_DblClick
 End Sub
 
 Private Sub mnuPopupRadio_Click()
