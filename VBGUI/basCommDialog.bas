@@ -110,7 +110,7 @@ Dim fResult As Boolean
     If IsMissing(DefaultExt) Then DefaultExt = ""
     If IsMissing(FileName) Then FileName = ""
     If IsMissing(DialogTitle) Then DialogTitle = ""
-    If IsMissing(hWnd) Then hWnd = Form1.hWnd
+    If IsMissing(hWnd) Then hWnd = frmMain.hWnd
     If IsMissing(OpenFile) Then OpenFile = True
     ' Allocate string space for the returned strings.
     '--Glen Sawyer Increased buffer size
