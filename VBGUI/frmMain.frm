@@ -936,9 +936,6 @@ Private Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttribut
 Private Declare Function GetFileAttributesW Lib "kernel32" _
   (ByVal lpFileName As Long) As Long
 
-Private Declare Function GetShortPathNameW Lib "kernel32" _
-  (ByVal lpLongPath As Long, ByVal lpShortPath As Long, ByVal BUFSIZE As Long) As Long
-
 Private Type OSVERSIONINFO
         dwOSVersionInfoSize As Long
         dwMajorVersion As Long
@@ -1631,6 +1628,7 @@ Public Function AddSingleFile(strName As String) As String
             End If
             
             fileInfo.ModifydBGain = dblGainAdjust
+            fileInfo.mLongPathName = strName
             flsMaster.Add fileInfo, strNewKeyVal
             
             If blnHaveTag Then DispJunk gitmX, fileInfo
@@ -2560,6 +2558,8 @@ Private Sub AlbumGain()
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                     End If
                     
+                    If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
+                    
                     Me.prgFile.Value = 0
                     If InStr(LCase$(strBlah), "not enough temp space on disk") Then
                         LogErr Replace(GetLocalString("frmMain.LCL_NO_TEMP_SPACE_1", _
@@ -2769,6 +2769,8 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
                     lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                 End If
                 
+                If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
+
                 Me.prgFile.Value = 0
                 
                 If InStr(LCase$(strBlah), "not enough temp space on disk") Then
@@ -2879,6 +2881,8 @@ Private Sub RadioSingleFile(itmX As ListItem, mp3Inf As Mp3Info)
     Else
         lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Key & """", strAppPath, True, False, False, 100)
     End If
+    
+    If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
     
     Me.prgFile.Value = 0
     
@@ -3150,6 +3154,8 @@ Private Sub RadioGain()
                     Else
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                     End If
+                    
+                    If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
                     
                     Me.prgFile.Value = 0
                     If InStr(LCase$(strBlah), "not enough temp space on disk") Then
@@ -3482,6 +3488,8 @@ Private Sub MaxNoClipGain()
                     Else
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                     End If
+                    
+                    If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
                     
                     Me.prgFile.Value = 0
                     If InStr(LCase$(strBlah), "not enough temp space on disk") Then
@@ -5766,6 +5774,8 @@ On Error GoTo DeleteFileTags_Error
                     lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                 End If
                 
+                If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
+                
                 Me.prgFile.Value = 0
                 
                 If InStr(LCase$(strBlah), "not enough temp space on disk") Then
@@ -5852,6 +5862,8 @@ On Error GoTo UndoFileGain_Error
                 Else
                     lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100)
                 End If
+                
+                If blnHaveUnicode Then Call CheckFileNameOkay(itmX.Key, flsMaster.Item(itmX.Key).mLongPathName)
                 
                 Me.prgFile.Value = 0
                 

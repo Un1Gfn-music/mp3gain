@@ -48,6 +48,7 @@ Private mvarModdB As Double
 Private mvarCurrMaxAmp As Double 'local copy
 Private mvarCurrMaxGain As Integer
 Private mvarCurrMinGain As Integer
+Public mLongPathName As String 'Man, I hate doing this...
 
 Private Const FIVELOG10TWO = 1.50514997831991
 
