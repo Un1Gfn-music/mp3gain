@@ -48,10 +48,11 @@ Private Const BFFM_SETSELECTION = (WM_USER + 102)
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As String) As Long
 Private Declare Function SHBrowseForFolder Lib "shell32" (lpbi As BrowseInfo) As Long
 Private Declare Function SHGetPathFromIDList Lib "shell32" (ByVal pidList As Long, ByVal lpBuffer As String) As Long
+Private Declare Function SHGetPathFromIDListW Lib "shell32" (ByVal pidList As Long, ByVal lpBuffer As Long) As Long
 Private Declare Function lstrcat Lib "kernel32" Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Long
 
 Private Type BrowseInfo
-  hWndOwner      As Long
+  hwndOwner      As Long
   pIDLRoot       As Long
   pszDisplayName As Long
   lpszTitle      As Long
@@ -75,7 +76,7 @@ Public Function BrowseForFolder(owner As Form, Title As String, StartDir As Stri
 
   szTitle = Title
   With tBrowseInfo
-    .hWndOwner = owner.hWnd
+    .hwndOwner = owner.hWnd
     .lpszTitle = lstrcat(szTitle, "")
     .ulFlags = BIF_RETURNONLYFSDIRS + BIF_DONTGOBELOWDOMAIN + BIF_STATUSTEXT
     .lpfnCallback = GetAddressofFunction(AddressOf BrowseCallbackProc)  'get address of function.
@@ -84,7 +85,11 @@ Public Function BrowseForFolder(owner As Form, Title As String, StartDir As Stri
   lpIDList = SHBrowseForFolder(tBrowseInfo)
   If (lpIDList) Then
     sBuffer = Space$(MAX_PATH)
-    SHGetPathFromIDList lpIDList, sBuffer
+    If frmMain.blnHaveUnicode Then
+        SHGetPathFromIDListW lpIDList, StrPtr(sBuffer)
+    Else
+        SHGetPathFromIDList lpIDList, sBuffer
+    End If
     sBuffer = Left$(sBuffer, InStr(sBuffer, vbNullChar) - 1)
     BrowseForFolder = sBuffer
   Else
@@ -110,11 +115,14 @@ Private Function BrowseCallbackProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVa
     Case BFFM_SELCHANGED
       sBuffer = Space$(MAX_PATH)
       
-      ret = SHGetPathFromIDList(lp, sBuffer)
-      If ret = 1 Then
-        Call SendMessage(hWnd, BFFM_SETSTATUSTEXT, 0, sBuffer)
-      End If
-      
+    If frmMain.blnHaveUnicode Then
+        ret = SHGetPathFromIDListW(lp, StrPtr(sBuffer))
+    Else
+        ret = SHGetPathFromIDList(lp, sBuffer)
+    End If
+    If ret = 1 Then
+      Call SendMessage(hWnd, BFFM_SETSTATUSTEXT, 0, sBuffer)
+    End If
   End Select
   
   BrowseCallbackProc = 0

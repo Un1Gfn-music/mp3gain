@@ -12,21 +12,22 @@ Attribute VB_Name = "basCommDialog"
 ' Waite Group Press, 1996
 
 'Modifications as marked by Glen Sawyer
+Option Explicit
 
 Type tagOPENFILENAME
     lStructSize As Long
     hwndOwner As Long
     hInstance As Long
-    strFilter As String
+    strFilter As Long 'String
     strCustomFilter As String
     nMaxCustFilter As Long
     nFilterIndex As Long
-    strFile As String
+    strFile As Long 'String
     nMaxFile As Long
-    strFileTitle As String
+    strFileTitle As Long 'String
     nMaxFileTitle As Long
-    strInitialDir As String
-    strTitle As String
+    strInitialDir As Long 'String
+    strTitle As Long 'String
     Flags As Long
     nFileOffset As Integer
     nFileExtension As Integer
@@ -39,8 +40,15 @@ End Type
 Declare Function aht_apiGetOpenFileName Lib "comdlg32.dll" _
     Alias "GetOpenFileNameA" (OFN As tagOPENFILENAME) As Boolean
 
+Declare Function aht_apiGetOpenFileNameUnicode Lib "comdlg32.dll" _
+    Alias "GetOpenFileNameW" (OFN As tagOPENFILENAME) As Boolean
+
 Declare Function aht_apiGetSaveFileName Lib "comdlg32.dll" _
     Alias "GetSaveFileNameA" (OFN As tagOPENFILENAME) As Boolean
+
+Declare Function aht_apiGetSaveFileNameUnicode Lib "comdlg32.dll" _
+    Alias "GetSaveFileNameW" (OFN As tagOPENFILENAME) As Boolean
+
 Declare Function CommDlgExtendedError Lib "comdlg32.dll" () As Long
 
 Global Const ahtOFN_READONLY = &H1
@@ -98,6 +106,7 @@ Public Function ahtCommonFileOpenSave( _
 ' Out:
 ' Return Value: Either Null or the selected filename
 Dim OFN As tagOPENFILENAME
+'Dim strFileName() As Byte
 Dim strFileName As String
 Dim strFileTitle As String
 Dim fResult As Boolean
@@ -109,26 +118,32 @@ Dim fResult As Boolean
     If IsMissing(DefaultExt) Then DefaultExt = ""
     If IsMissing(FileName) Then FileName = ""
     If IsMissing(DialogTitle) Then DialogTitle = ""
-    If IsMissing(hWnd) Then hWnd = Form1.hWnd
+    If IsMissing(hWnd) Then hWnd = frmMain.hWnd
     If IsMissing(OpenFile) Then OpenFile = True
     ' Allocate string space for the returned strings.
     '--Glen Sawyer Increased buffer size
     strFileName = Left$(FileName & String$(26001, 0), 26001)
+'    ReDim strFileName(0 To 52002) As Byte
     strFileTitle = String$(26001, 0)
     ' Set up the data structure before you call the function
+    If Not (OpenFile And frmMain.blnHaveUnicode) Then
+        Filter = StrConv(Filter, vbFromUnicode)
+        InitialDir = StrConv(InitialDir, vbFromUnicode)
+    End If
     With OFN
         .lStructSize = Len(OFN)
         .hwndOwner = hWnd
-        .strFilter = Filter
+        .strFilter = StrPtr(Filter)
         .nFilterIndex = FilterIndex
-        .strFile = strFileName
+        .strFile = StrPtr(strFileName)
+'        .nMaxFile = 26000
         .nMaxFile = Len(strFileName) - 1
-        .strFileTitle = strFileTitle
+        .strFileTitle = StrPtr(strFileTitle)
         .nMaxFileTitle = Len(strFileTitle) - 1
-        .strTitle = DialogTitle
+        .strTitle = StrPtr(DialogTitle)
         .Flags = Flags
         .strDefExt = DefaultExt
-        .strInitialDir = InitialDir
+        .strInitialDir = StrPtr(InitialDir)
         ' Didn't think most people would want to deal with
         ' these options.
         .hInstance = 0
@@ -143,9 +158,17 @@ Dim fResult As Boolean
     ' Windows API, which will in turn it uses to display
     ' the Open/Save As Dialog.
     If OpenFile Then
-        fResult = aht_apiGetOpenFileName(OFN)
+        If frmMain.blnHaveUnicode Then
+            fResult = aht_apiGetOpenFileNameUnicode(OFN)
+        Else
+            fResult = aht_apiGetOpenFileName(OFN)
+        End If
     Else
-        fResult = aht_apiGetSaveFileName(OFN)
+        If frmMain.blnHaveUnicode Then
+            fResult = aht_apiGetSaveFileNameUnicode(OFN)
+        Else
+            fResult = aht_apiGetSaveFileName(OFN)
+        End If
     End If
 
     ' The function call filled in the strFileTitle member
@@ -159,7 +182,11 @@ Dim fResult As Boolean
         ' value for Flags, we'll fill it in with the outgoing
         ' Flags value.
         'If Not IsMissing(Flags) Then Flags = OFN.Flags
-        ahtCommonFileOpenSave = TrimNull(OFN.strFile)
+        If Not frmMain.blnHaveUnicode Then
+            strFileName = StrConv(strFileName, vbUnicode)
+        End If
+        
+        ahtCommonFileOpenSave = TrimNull(strFileName)
     Else
         ahtCommonFileOpenSave = vbNullString
     End If
@@ -169,7 +196,7 @@ End Function
 'Multi-select files are separated by a single Null character,
 'so searching for vbNullChar won't work. Instead, we need to
 'search for two Null characters in a row.
-Private Function TrimNull(ByVal strItem As String) As String
+Public Function TrimNull(ByVal strItem As String) As String
 Dim intPos As Integer
     intPos = InStr(strItem, vbNullChar & vbNullChar)
     If intPos > 0 Then

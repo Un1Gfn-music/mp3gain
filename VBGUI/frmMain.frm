@@ -799,11 +799,14 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Function GetLastError Lib "kernel32" () As Long
+
 Dim mcollOriginalCaptions As Collection
 Dim strOrgButtonTip(1 To 8) As String
 Dim strOrgButtonMenu(1 To 6) As String
 Public strCurLanguageFileName As String
 Public sOrder As Boolean
+Public blnHaveUnicode As Boolean
 Dim sortColumn As Integer
 Dim glErrCount As Long
 
@@ -923,6 +926,26 @@ Private Declare Function HtmlHelp Lib "hhctrl.ocx" Alias "HtmlHelpA" _
    
 Private Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttributesA" _
   (ByVal lpFileName As String) As Long
+
+Private Declare Function GetFileAttributesW Lib "kernel32" _
+  (ByVal lpFileName As Long) As Long
+
+Private Declare Function GetShortPathNameW Lib "kernel32" _
+  (ByVal lpLongPath As Long, ByVal lpShortPath As Long, ByVal BUFSIZE As Long) As Long
+
+Private Type OSVERSIONINFO
+        dwOSVersionInfoSize As Long
+        dwMajorVersion As Long
+        dwMinorVersion As Long
+        dwBuildNumber As Long
+        dwPlatformId As Long
+        szCSDVersion As String * 128
+End Type
+
+Private Const VER_PLATFORM_WIN32_NT = 2
+
+Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" _
+  (lpVersionInformation As OSVERSIONINFO) As Long
 
 Private Sub modTrayToolTip(strNewTip As String)
     nid.szTip = strNewTip & vbNullChar
@@ -1470,15 +1493,26 @@ Public Function AddSingleFile(strName As String) As String
     Dim intLF As Integer
     Dim arrVals() As String
     Dim blnHaveTag As Boolean
-    
+    Dim strNameShort As String
     AddSingleFile = ""
     
     If blnCancel Then Exit Function
     
     blnOkayAddIt = False
     
+    If blnHaveUnicode Then
+        strNameShort = String$(26001, vbNullChar)
+        If GetShortPathNameW(StrPtr(strName), StrPtr(strNameShort), 26000) Then
+            strNameShort = TrimNull(strNameShort)
+        Else
+            strNameShort = strName
+        End If
+    Else
+        strNameShort = strName
+    End If
+    
     On Error Resume Next
-    faReadOnlyCheck = (GetAttr(strName) And vbReadOnly)
+    faReadOnlyCheck = (GetAttr(strNameShort) And vbReadOnly)
     If Err.Number Then Exit Function 'Can't check file
     On Error GoTo AddSingleFile_Error
     
@@ -1522,7 +1556,7 @@ Public Function AddSingleFile(strName As String) As String
             DoEvents
         End If
         
-        strNewKeyVal = LCase$(strName)
+        strNewKeyVal = LCase$(strNameShort)
         
         On Error Resume Next
         Set gitmX = lstvMain.ListItems.Add(, strNewKeyVal, strName)
@@ -1549,7 +1583,7 @@ Public Function AddSingleFile(strName As String) As String
             
             blnHaveTag = False
             
-            strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strName & """"
+            strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strNewKeyVal & """"
             
             If mnuSkipTags.Checked Or mnuReCalcTags.Checked Or mnuSkipTagsWhileAdding.Checked Then
                 lngRetVal = 0
@@ -1895,17 +1929,26 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
     If blnCancel Then Exit Sub
     
     If mnuAddSubs.Checked Then
-        On Error Resume Next 'in case the path doesn't exist
-            strFile = Dir(strPath, vbNormal Or vbHidden Or _
-                vbReadOnly Or vbArchive Or vbSystem Or vbDirectory)
-            If Err.Number <> 0 Then strFile = ""
-        On Error GoTo AddFolderFiles_Error
+        If blnHaveUnicode Then
+            strFile = UnicodeStartFind(strPath, vbNormal Or vbHidden Or vbReadOnly Or _
+                        vbArchive Or vbSystem Or vbDirectory, faCur)
+        Else
+            On Error Resume Next 'in case the path doesn't exist
+                strFile = Dir(strPath, vbNormal Or vbHidden Or _
+                    vbReadOnly Or vbArchive Or vbSystem Or vbDirectory)
+                If Err.Number <> 0 Then strFile = ""
+            On Error GoTo AddFolderFiles_Error
+        End If
         While (strFile <> "") And Not blnCancel
             If (strFile <> ".") And (strFile <> "..") Then
-                On Error Resume Next 'in case the folder/file doesn't exist at all
-                    faCur = (GetFileAttributes(strPath & strFile) And vbDirectory)
-                    If Err.Number <> 0 Then faCur = -1
-                On Error GoTo AddFolderFiles_Error
+                If blnHaveUnicode Then
+                    faCur = faCur And vbDirectory
+                Else
+                    On Error Resume Next 'in case the folder/file doesn't exist at all
+                        faCur = (GetFileAttributes(strPath & strFile) And vbDirectory)
+                        If Err.Number <> 0 Then faCur = -1
+                    On Error GoTo AddFolderFiles_Error
+                End If
                 If faCur = vbDirectory Then
                     colFolderList.Add strPath & strFile & "\"
                 Else
@@ -1914,14 +1957,30 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
                     End If
                 End If
             End If
-            strFile = Dir
+            If blnHaveUnicode Then
+                strFile = UnicodeNextFind(faCur)
+            Else
+                strFile = Dir
+            End If
         Wend
     Else
-        strFile = Dir(strPath & "*.mp3", vbNormal Or vbHidden Or _
-            vbReadOnly Or vbArchive Or vbSystem)
+        If blnHaveUnicode Then
+            strFile = UnicodeStartFind(strPath & "*.mp3", vbNormal Or vbHidden Or _
+                        vbReadOnly Or vbArchive Or vbSystem, faCur)
+        Else
+            On Error Resume Next 'in case the path doesn't exist
+                strFile = Dir(strPath & "*.mp3", vbNormal Or vbHidden Or _
+                    vbReadOnly Or vbArchive Or vbSystem)
+                If Err.Number <> 0 Then strFile = ""
+            On Error GoTo AddFolderFiles_Error
+        End If
         While (strFile <> "") And Not blnCancel
             AddSingleFile strPath & strFile
-            strFile = Dir
+            If blnHaveUnicode Then
+                strFile = UnicodeNextFind(faCur)
+            Else
+                strFile = Dir
+            End If
         Wend
     End If
     
@@ -2067,7 +2126,7 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
         If (Not mnuSelectedFiles.Checked) Or (subItmX.Checked) Then
             If subItmX.ListSubItems(glPath) = strAlbum Then
                 If subItmX.Tag <> "X" Then subItmX.Tag = "Y"
-                strCmd = strCmd & " """ & subItmX.Text & """"
+                strCmd = strCmd & " """ & subItmX.Key & """"
             Else
                 If subItmX.Tag <> "X" Then subItmX.Tag = "N"
             End If
@@ -2304,7 +2363,7 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                 For Each itmX In lstvMain.ListItems
                     If (Not mnuSelectedFiles.Checked) Or (itmX.Checked) Then
                         If itmX.Tag <> "X" Then itmX.Tag = "Y"
-                        strCmd = strCmd & " """ & itmX.Text & """"
+                        strCmd = strCmd & " """ & itmX.Key & """"
                     Else
                         If itmX.Tag <> "X" Then itmX.Tag = "N"
                     End If
@@ -2487,7 +2546,7 @@ Private Sub AlbumGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Text & """"
+                    strCmd = strCmd & """" & itmX.Key & """"
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -2693,7 +2752,7 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
                     strCmd = strCmd & "/s s "
                 End If
                 
-                strCmd = strCmd & """" & itmX.Text & """"
+                strCmd = strCmd & """" & itmX.Key & """"
                 
                 Refresh
                 strBlah = ""
@@ -2810,9 +2869,9 @@ Private Sub RadioSingleFile(itmX As ListItem, mp3Inf As Mp3Info)
     
     
     If blnShowFileStatus Then
-        lngRetVal = GetCommandOutput(strBlah, strCmd & """" & itmX.Text & """", strAppPath, True, False, False, 100, , Me.txtProgWatch)
+        lngRetVal = GetCommandOutput(strBlah, strCmd & """" & itmX.Key & """", strAppPath, True, False, False, 100, , Me.txtProgWatch)
     Else
-        lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Text & """", strAppPath, True, False, False, 100)
+        lngRetVal = GetCommandOutput(strBlah, strCmd & "/q """ & itmX.Key & """", strAppPath, True, False, False, 100)
     End If
     
     Me.prgFile.Value = 0
@@ -3078,7 +3137,7 @@ Private Sub RadioGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Text & """"
+                    strCmd = strCmd & """" & itmX.Key & """"
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -3410,7 +3469,7 @@ Private Sub MaxNoClipGain()
                         strCmd = strCmd & "/s s "
                     End If
                     
-                    strCmd = strCmd & """" & itmX.Text & """"
+                    strCmd = strCmd & """" & itmX.Key & """"
                     
                     If blnShowFileStatus Then
                         lngRetVal = GetCommandOutput(strBlah, strCmd, strAppPath, True, True, False, 100, , Me.txtProgWatch)
@@ -3721,6 +3780,21 @@ Private Sub Form_Load()
     Dim intVerLen As Integer
     Dim sBlah As String
     Dim blnBackEndOK As Boolean
+    
+    Dim OSV As OSVERSIONINFO
+    
+    blnHaveUnicode = False
+    
+    OSV.dwOSVersionInfoSize = Len(OSV)
+    If GetVersionEx(OSV) = 1 Then
+        If OSV.dwPlatformId = VER_PLATFORM_WIN32_NT Then
+            blnHaveUnicode = True
+        End If
+    End If
+    
+    blnHaveUnicode = False
+    
+    Call SetupUnicodeFind
     
     blnAddingUndoSpace = False
     
@@ -5261,7 +5335,7 @@ Private Sub txtAlbumMonitor_Change()
                     If Not blnCancel And (UBound(arrStuff) > -1) Then
                         LogErr GetLocalString("frmMain.LCL_ERROR_ANALYZING", "Error while analyzing") & ": " & arrStuff(0)
                         For i = 1 To lstvMain.ListItems.Count
-                            If lstvMain.ListItems(i).Text = arrStuff(0) Then
+                            If lstvMain.ListItems(i).Key = arrStuff(0) Then
                                 lstvMain.ListItems(i).Tag = "X"
                                 Exit For
                             End If
@@ -5290,7 +5364,7 @@ Private Sub txtAlbumMonitor_Change()
                             UpdateCaptionPercentage CLng((prgTot.Value * 100) / prgTot.Max)
                         End If
                         For i = 1 To lstvMain.ListItems.Count
-                            If lstvMain.ListItems(i).Text = arrStuff(0) Then
+                            If lstvMain.ListItems(i).Key = arrStuff(0) Then
                                 Set itmX = lstvMain.ListItems(i)
                                 i = lstvMain.ListItems.Count
                             End If
@@ -5662,7 +5736,7 @@ On Error GoTo DeleteFileTags_Error
                     strCmd = strCmd & "/p "
                 End If
                 
-                strCmd = strCmd & """" & itmX.Text & """"
+                strCmd = strCmd & """" & itmX.Key & """"
                 
                 Refresh
                 strBlah = ""
@@ -5749,7 +5823,7 @@ On Error GoTo UndoFileGain_Error
                     strCmd = strCmd & "/f "
                 End If
                                 
-                strCmd = strCmd & """" & itmX.Text & """"
+                strCmd = strCmd & """" & itmX.Key & """"
                 
                 Refresh
                 strBlah = ""
