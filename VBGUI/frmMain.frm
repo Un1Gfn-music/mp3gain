@@ -4903,7 +4903,7 @@ Private Sub mnuLanguage_Click(Index As Integer)
     
     ResetColumnWidths
     
-    targetChange 'The simplest way to refresh the analysis results in the file list
+    targetChange True 'The simplest way to refresh the analysis results in the file list
     
     Exit Sub
 mnuLanguage_Click_Error:
@@ -5501,12 +5501,15 @@ txtProgWatch_Change_Error:
     HandleError "txtProgWatch_Change"
 End Sub
 
-Private Sub targetChange()
+Private Sub targetChange(Optional blnLowerBound As Boolean = False)
     If IsNumeric(txtTargetInt.Text) And IsNumeric(txtTargetDec.Text) Then
         txtTargetInt.Text = Int(txtTargetInt.Text)
         txtTargetDec.Text = Int(txtTargetDec.Text)
-        If txtTargetInt.Text > 500 Then
-            txtTargetInt.Text = 500
+        If txtTargetInt.Text > 105 Then
+            txtTargetInt.Text = 105
+        End If
+        If blnLowerBound And txtTargetInt.Text < 75 Then
+            txtTargetInt.Text = 75
         End If
         If Len(txtTargetDec.Text) > 1 Then
             txtTargetDec.Text = Mid$(txtTargetDec.Text, 1, 1)
@@ -5529,7 +5532,7 @@ End Sub
 Private Sub txtTargetInt_Change()
     If Not blnTargetIsChanging Then
         blnTargetIsChanging = True
-        targetChange
+        targetChange False
         blnTargetIsChanging = False
     End If
 End Sub
@@ -5537,7 +5540,7 @@ End Sub
 Private Sub txtTargetDec_Change()
     If Not blnTargetIsChanging Then
         blnTargetIsChanging = True
-        targetChange
+        targetChange True
         blnTargetIsChanging = False
     End If
 End Sub
@@ -5562,7 +5565,7 @@ Private Sub txtTargetInt_LostFocus()
     If Not IsNumeric(txtTargetInt.Text) Then
         txtTargetInt.Text = DEFAULTTARGET
     Else
-        txtTargetInt.Text = Int(txtTargetInt.Text)
+        targetChange True
     End If
 End Sub
 
