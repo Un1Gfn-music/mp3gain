@@ -4367,7 +4367,7 @@ Private Sub lstvMain_DblClick()
     
     For Each itmX In lstvMain.ListItems
         If itmX.Selected Then
-            Call ShellExecute(0&, vbNullString, itmX.Key, vbNullString, vbNullString, vbNormalFocus)
+            Call ShellExecute(0&, vbNullString, itmX.Text, vbNullString, vbNullString, vbNormalFocus)
         End If
     Next
     
