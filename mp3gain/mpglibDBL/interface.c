@@ -137,7 +137,7 @@ static int read_buf_byte(PMPSTR mp)
 			fprintf(stderr,"Fatal error! tried to read past mp buffer\n");
             fclose(stdout);
             fclose(stderr);
-			exit(0);
+			exit(1);
 		}
 		pos = mp->tail->pos;
 	}
