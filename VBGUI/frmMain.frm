@@ -1570,17 +1570,17 @@ Public Function AddSingleFile(strName As String) As String
             
             lngPathSplit = InStrRev(strName, "\")
             
-            gitmX.ListSubItems.Add lsVolume, "Volume"
+            gitmX.ListSubItems.Add lsVolume, "Volume", " "
             gitmX.ListSubItems.Add lsClip, "Clip"
-            gitmX.ListSubItems.Add lsRadioGain, "RadioGain"
+            gitmX.ListSubItems.Add lsRadioGain, "RadioGain", " "
             gitmX.ListSubItems.Add lsRadioClip, "RadioClip"
-            gitmX.ListSubItems.Add lsMaxNoClip, "MaxNoClip"
-            gitmX.ListSubItems.Add lsAlbumVolume, "AlbumVolume"
-            gitmX.ListSubItems.Add lsAlbumGain, "AlbumGain"
+            gitmX.ListSubItems.Add lsMaxNoClip, "MaxNoClip", " "
+            gitmX.ListSubItems.Add lsAlbumVolume, "AlbumVolume", " "
+            gitmX.ListSubItems.Add lsAlbumGain, "AlbumGain", " "
             gitmX.ListSubItems.Add lsAlbumClip, "AlbumClip"
             gitmX.ListSubItems.Add glPath, "Path", Left$(strName, lngPathSplit)
             gitmX.ListSubItems.Add glFile, "File", Mid$(strName, lngPathSplit + 1)
-            gitmX.ListSubItems.Add lsMaxAmp, "MaxAmp"
+            gitmX.ListSubItems.Add lsMaxAmp, "MaxAmp", " "
             
             Set fileInfo = New Mp3Info
             
@@ -1674,8 +1674,8 @@ Public Sub DispJunk(itmX As ListItem, mp3Inf As Mp3Info)
         itmX.ListSubItems(lsVolume).Text = Format$(DEFAULTTARGET + mp3Inf.ModifydBGain - mp3Inf.RadiodBGain, "0.0")
         itmX.ListSubItems(lsRadioGain).Text = Format$(CDbl(mp3Inf.RadioMp3Gain) * 1.505, "0.0")
     Else
-        itmX.ListSubItems(lsVolume).Text = ""
-        itmX.ListSubItems(lsRadioGain).Text = ""
+        itmX.ListSubItems(lsVolume).Text = " "
+        itmX.ListSubItems(lsRadioGain).Text = " "
     End If
 
     If mp3Inf.CurrMaxAmp <> NOREALNUM Then
@@ -1763,11 +1763,11 @@ Public Sub DispJunk(itmX As ListItem, mp3Inf As Mp3Info)
     Else
         itmX.ListSubItems(lsRadioClip).Text = ""
         itmX.ListSubItems(lsRadioClip).ForeColor = vbBlack
-        itmX.ListSubItems(lsMaxNoClip).Text = ""
+        itmX.ListSubItems(lsMaxNoClip).Text = " "
         itmX.ListSubItems(lsMaxNoClip).ForeColor = vbBlack
         itmX.ListSubItems(lsClip) = ""
         itmX.ListSubItems(lsClip).ForeColor = vbBlack
-        itmX.ListSubItems(lsMaxAmp).Text = ""
+        itmX.ListSubItems(lsMaxAmp).Text = " "
         itmX.ListSubItems(lsAlbumClip).Text = ""
         itmX.ListSubItems(lsAlbumClip).ForeColor = vbBlack
     End If
@@ -1776,8 +1776,8 @@ Public Sub DispJunk(itmX As ListItem, mp3Inf As Mp3Info)
         itmX.ListSubItems(lsAlbumVolume).Text = Format$(DEFAULTTARGET + mp3Inf.ModifydBGain - mp3Inf.AlbumdBGain, "0.0")
         itmX.ListSubItems(lsAlbumGain).Text = Format$(CDbl(mp3Inf.AlbumMp3Gain) * 1.505, "0.0")
     Else
-        itmX.ListSubItems(lsAlbumVolume).Text = ""
-        itmX.ListSubItems(lsAlbumGain).Text = ""
+        itmX.ListSubItems(lsAlbumVolume).Text = " "
+        itmX.ListSubItems(lsAlbumGain).Text = " "
     End If
 
     Exit Sub
