@@ -278,7 +278,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         0&, DUPLICATE_SAME_ACCESS) = 0 Then
         Call CloseHandle(hPipeReadTemp)
         Call CloseHandle(hPipeWrite1)
-        GetCommandOutput = 0
+        GetCommandOutput = 1
         Exit Function
     End If
     Call CloseHandle(hPipeReadTemp)
@@ -289,7 +289,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
             1&, DUPLICATE_SAME_ACCESS) = 0 Then
             Call CloseHandle(hPipeRead)
             Call CloseHandle(hPipeWrite1)
-            GetCommandOutput = 0
+            GetCommandOutput = 1
             Exit Function
         End If
     End If
@@ -303,7 +303,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
                 Call CloseHandle(hPipeRead)
                 Call CloseHandle(hPipeWrite1)
                 If hPipeWrite2 Then Call CloseHandle(hPipeWrite2)
-                GetCommandOutput = 0
+                GetCommandOutput = 1
                 Exit Function
             End If
             If DuplicateHandle(hCurProcess, hPipeReadSepTemp, hCurProcess, hPipeReadSep, 0&, _
@@ -313,7 +313,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
                 If hPipeWrite2 Then Call CloseHandle(hPipeWrite2)
                 Call CloseHandle(hPipeReadSepTemp)
                 Call CloseHandle(hPipeWriteSep)
-                GetCommandOutput = 0
+                GetCommandOutput = 1
                 Exit Function
             End If
             Call CloseHandle(hPipeReadSepTemp)
