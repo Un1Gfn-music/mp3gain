@@ -816,6 +816,7 @@ Public blnHaveUnicode As Boolean
 Dim sortColumn As Integer
 Dim glErrCount As Long
 
+Dim blnHaveAACGain As Boolean
 Dim strAddFolderPath As String
 Dim strAddFilesPath As String
 Dim blnDoSubDirs As Boolean
@@ -1882,11 +1883,17 @@ Private Sub AddFiles()
     blnAddAllReadOnly = False
     blnCancel = False
     
-    strFilter = GetLocalString("frmMain.LCL_OPEN_FILE_FILTER1", "MP3/AAC files/lists") & _
-        " (*.mp3;*.m3u;*.m4a;*.mp4)" & vbNullChar & "*.mp3;*.m3u;*.m4a;*.mp4" & vbNullChar & _
-        GetLocalString("frmMain.LCL_OPEN_FILE_FILTER2", "All files") & _
-        " (*.*)" & vbNullChar & "*.*" & vbNullChar
-    
+    If blnHaveAACGain Then
+        strFilter = GetLocalString("frmMain.LCL_OPEN_FILE_FILTER1", "MP3/AAC files/lists") & _
+            " (*.mp3;*.m3u;*.m4a;*.mp4)" & vbNullChar & "*.mp3;*.m3u;*.m4a;*.mp4" & vbNullChar & _
+            GetLocalString("frmMain.LCL_OPEN_FILE_FILTER2", "All files") & _
+            " (*.*)" & vbNullChar & "*.*" & vbNullChar
+    Else
+        strFilter = GetLocalString("frmMain.LCL_OPEN_FILE_FILTER1", "MP3 files/lists") & _
+            " (*.mp3;*.m3u)" & vbNullChar & "*.mp3;*.m3u" & vbNullChar & _
+            GetLocalString("frmMain.LCL_OPEN_FILE_FILTER2", "All files") & _
+            " (*.*)" & vbNullChar & "*.*" & vbNullChar
+    End If
         lngFlags = ahtOFN_ALLOWMULTISELECT Or _
         ahtOFN_EXPLORER Or _
         ahtOFN_LONGNAMES Or _
@@ -1970,7 +1977,7 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
                 Else
                     strExtensionCheck = LCase$(Right$(strFile, 4))
                     If (faCur <> -1) Then
-                        If strExtensionCheck = ".mp3" Or strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4" Then
+                        If strExtensionCheck = ".mp3" Or (blnHaveAACGain And (strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4")) Then
                             AddSingleFile strPath & strFile
                         End If
                     End If
@@ -1984,12 +1991,22 @@ Private Sub AddFolderFiles(strPath As String, colFolderList As Collection)
         Wend
     Else
         If blnHaveUnicode Then
-            strFile = UnicodeStartFind(strPath & "*.mp3;*.m4a;*.mp4", vbNormal Or vbHidden Or _
-                        vbReadOnly Or vbArchive Or vbSystem, faCur)
+            If blnHaveAACGain Then
+                strFile = UnicodeStartFind(strPath & "*.mp3;*.m4a;*.mp4", vbNormal Or vbHidden Or _
+                            vbReadOnly Or vbArchive Or vbSystem, faCur)
+            Else
+                strFile = UnicodeStartFind(strPath & "*.mp3", vbNormal Or vbHidden Or _
+                            vbReadOnly Or vbArchive Or vbSystem, faCur)
+            End If
         Else
             On Error Resume Next 'in case the path doesn't exist
-                strFile = Dir(strPath & "*.mp3;*.m4a;*.mp4", vbNormal Or vbHidden Or _
-                    vbReadOnly Or vbArchive Or vbSystem)
+                If blnHaveAACGain Then
+                    strFile = Dir(strPath & "*.mp3;*.m4a;*.mp4", vbNormal Or vbHidden Or _
+                        vbReadOnly Or vbArchive Or vbSystem)
+                Else
+                    strFile = Dir(strPath & "*.mp3", vbNormal Or vbHidden Or _
+                        vbReadOnly Or vbArchive Or vbSystem)
+                End If
                 If Err.Number <> 0 Then strFile = ""
             On Error GoTo AddFolderFiles_Error
         End If
@@ -2082,7 +2099,7 @@ Private Sub AddM3U(strM3UFile As String)
         Line Input #intFileNum, strLine
         If Left$(strLine, 1) <> "#" Then
             strExtensionCheck = LCase$(Right$(strLine, 4))
-            If strExtensionCheck = ".mp3" Or strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4" Then
+            If strExtensionCheck = ".mp3" Or (blnHaveAACGain And (strExtensionCheck = ".m4a" Or strExtensionCheck = ".mp4")) Then
                 strLine = CleanOutRelativePathInfo(strLine)
                 If (Mid$(strLine, 2, 1) = ":") Or (Left$(strLine, 2) = "\\") Then
                     AddSingleFile (strLine)
@@ -3896,7 +3913,14 @@ Private Sub Form_Load()
     strCurLanguageFileName = UCase$(mnuLanguage(intCurLanguage).Tag)
     
     blnBackEndOK = False
+    blnHaveAACGain = False
+    
     lngRetVal = GetCommandOutput(sBlah, strAppPath & "mp3gain /v", strAppPath, False, True, False)
+    
+    If LCase$(Left$(sBlah, 7)) = "aacgain" Then
+        blnHaveAACGain = True
+    End If
+    
     intVer = InStr(LCase$(sBlah), "version")
     If intVer > 0 Then
         intVerLen = Len(Mid$(sBlah, intVer + 8)) - 2
@@ -5692,11 +5716,15 @@ Public Sub AddListOfFiles(arrInputFiles() As String, strListDrive As String, str
             flFormat = CleanOutRelativePathInfo(flFormat)
             AddSingleFile (flFormat)
         Case ".m4a"
-            flFormat = CleanOutRelativePathInfo(flFormat)
-            AddSingleFile (flFormat)
+            If blnHaveAACGain Then
+                flFormat = CleanOutRelativePathInfo(flFormat)
+                AddSingleFile (flFormat)
+            End If
         Case ".mp4"
-            flFormat = CleanOutRelativePathInfo(flFormat)
-            AddSingleFile (flFormat)
+            If blnHaveAACGain Then
+                flFormat = CleanOutRelativePathInfo(flFormat)
+                AddSingleFile (flFormat)
+            End If
         Case ".m3u"
             flFormat = CleanOutRelativePathInfo(flFormat)
             AddM3U (flFormat)
