@@ -46,6 +46,8 @@ Private Const STARTF_USESTDHANDLES = &H100
 ' ShowWindow flags
 Private Const SW_HIDE = 0
 Public Const SW_SHOWNORMAL = 1
+Private Const SW_SHOWMINIMIZED = 2
+Private Const SW_SHOWMINNOACTIVE = 7
 
 ' DuplicateHandle flags
 Private Const DUPLICATE_CLOSE_SOURCE = &H1
@@ -67,9 +69,9 @@ End Type
 
 Private Type STARTUPINFO
   cb As Long
-  lpReserved As String
-  lpDesktop As String
-  lpTitle As String
+  lpReserved As Long
+  lpDesktop As Long
+  lpTitle As Long
   dwX As Long
   dwY As Long
   dwXSize As Long
@@ -80,7 +82,7 @@ Private Type STARTUPINFO
   dwFlags As Long
   wShowWindow As Integer
   cbReserved2 As Integer
-  lpReserved2 As Long
+  lpReserved2 As Byte
   hStdInput As Long
   hStdOutput As Long
   hStdError As Long
@@ -171,6 +173,8 @@ Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
      Source As Any, _
      ByVal Length As Long)
 
+Private Declare Sub GetStartupInfo Lib "kernel32" Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
+
 Private Const WAIT_TIMEOUT = &H102&
 
 '#If GLENDEBUG Then
@@ -221,14 +225,14 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         Optional cErrWatch As TextBox, _
         Optional blnAllowEvents As Boolean = True) As Long
 
-    Dim hPipeRead As Long, hPipeWrite1 As Long, hPipeWrite2 As Long
-    Dim hPipeReadSep As Long, hPipeWriteSep As Long
+    Dim hPipeRead As Long, hPipeReadTemp As Long, hPipeWrite1 As Long, hPipeWrite2 As Long
+    Dim hPipeReadSep As Long, hPipeReadSepTemp As Long, hPipeWriteSep As Long
   
     Dim hCurProcess As Long
     Dim sa As SECURITY_ATTRIBUTES
     Dim si As STARTUPINFO
     Dim pi As PROCESS_INFORMATION
-    Dim baOutput(0 To BUFSIZE) As Byte '0 is base, but we'll leave the extra byte on the end just for fun
+    Dim baOutput(0 To BUFSIZE + 1) As Byte '0 is base, but we'll leave the extra byte on the end just for fun
     Dim sNewOutput As String
     Dim lBytesRead As Long
     Dim lTotalBytesAvail As Long
@@ -249,8 +253,10 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
     ReDim bytDebugOutput(0 To 0) As Byte
 #End If
     lRet = 0
-  
-  
+    hPipeWrite1 = 0
+    hPipeWrite2 = 0
+    hPipeWriteSep = 0
+    
     ' At least one of them should be True, otherwise there's no point in calling the function
     If (Not fStdOut) And (Not fStdErr) Then Err.Raise 5         ' Invalid Procedure call or Argument
   
@@ -259,21 +265,33 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
     
     With sa
         .nLength = Len(sa)
-        .bInheritHandle = 1    ' get inheritable pipe handles
+        .bInheritHandle = True    ' get inheritable pipe handles
+        .lpSecurityDescriptor = 0
     End With
   
-    If CreatePipe(hPipeRead, hPipeWrite1, sa, BUFSIZE) = 0 Then Exit Function
+    If CreatePipe(hPipeReadTemp, hPipeWrite1, sa, 0) = 0 Then Exit Function
     hCurProcess = GetCurrentProcess()
   
     ' Replace our inheritable read handle with an non-inheritable. Not that it
     ' seems to be necessary in this case, but the docs say we should.
-    Call DuplicateHandle(hCurProcess, hPipeRead, hCurProcess, hPipeRead, 0&, _
-        0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE)
+    If DuplicateHandle(hCurProcess, hPipeReadTemp, hCurProcess, hPipeRead, 0&, _
+        0&, DUPLICATE_SAME_ACCESS) = 0 Then
+        Call CloseHandle(hPipeReadTemp)
+        Call CloseHandle(hPipeWrite1)
+        GetCommandOutput = 0
+        Exit Function
+    End If
+    Call CloseHandle(hPipeReadTemp)
     
     ' If both STDOUT and STDERR should be redirected, get an extra handle.
     If fTwoHandles Then
-        Call DuplicateHandle(hCurProcess, hPipeWrite1, hCurProcess, hPipeWrite2, 0&, _
-            1&, DUPLICATE_SAME_ACCESS)
+        If DuplicateHandle(hCurProcess, hPipeWrite1, hCurProcess, hPipeWrite2, 0&, _
+            1&, DUPLICATE_SAME_ACCESS) = 0 Then
+            Call CloseHandle(hPipeRead)
+            Call CloseHandle(hPipeWrite1)
+            GetCommandOutput = 0
+            Exit Function
+        End If
     End If
   
     blnSepErr = False
@@ -281,20 +299,30 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         If (Not fStdErr) Then
             blnSepErr = True
       
-            If CreatePipe(hPipeReadSep, hPipeWriteSep, sa, BUFSIZE) = 0 Then
+            If CreatePipe(hPipeReadSepTemp, hPipeWriteSep, sa, 0) = 0 Then
                 Call CloseHandle(hPipeRead)
                 Call CloseHandle(hPipeWrite1)
                 If hPipeWrite2 Then Call CloseHandle(hPipeWrite2)
-          
+                GetCommandOutput = 0
                 Exit Function
             End If
-            Call DuplicateHandle(hCurProcess, hPipeReadSep, hCurProcess, hPipeReadSep, 0&, _
-                0&, DUPLICATE_SAME_ACCESS Or DUPLICATE_CLOSE_SOURCE)
+            If DuplicateHandle(hCurProcess, hPipeReadSepTemp, hCurProcess, hPipeReadSep, 0&, _
+                0&, DUPLICATE_SAME_ACCESS) = 0 Then
+                Call CloseHandle(hPipeRead)
+                Call CloseHandle(hPipeWrite1)
+                If hPipeWrite2 Then Call CloseHandle(hPipeWrite2)
+                Call CloseHandle(hPipeReadSepTemp)
+                Call CloseHandle(hPipeWriteSep)
+                GetCommandOutput = 0
+                Exit Function
+            End If
+            Call CloseHandle(hPipeReadSepTemp)
         End If
     End If
   
+    GetStartupInfo si
     With si
-        .cb = Len(si)
+'        .cb = Len(si)
         .dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
         .wShowWindow = SW_HIDE 'SHOWNORMAL          ' hide the window
     
@@ -310,8 +338,12 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
             .hStdError = hPipeWrite1
         End If
     End With
-
-    lngOuch = CreateProcess(vbNullString, sCommandLine, ByVal 0&, ByVal 0&, 1, lngThreadPriority, _
+    pi.dwProcessId = 0
+    pi.dwThreadId = 0
+    pi.hProcess = 0
+    pi.hThread = 0
+    
+    lngOuch = CreateProcess(vbNullString, sCommandLine, ByVal 0&, ByVal 0&, True, lngThreadPriority, _
         ByVal 0&, sStartingDirectory, si, pi)
     If lngOuch Then
     
@@ -350,6 +382,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
             If PeekNamedPipe(hPipeRead, 0&, 0&, 0&, lTotalBytesAvail, 0&) <> 0& Then
                 While lTotalBytesAvail > 0
                     ' Get the available data from the buffer
+                    Erase baOutput
                     If lTotalBytesAvail > BUFSIZE Then
                         If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0& Then
                             lTotalBytesAvail = 0
@@ -403,6 +436,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
                 If PeekNamedPipe(hPipeReadSep, 0&, 0&, 0&, lTotalBytesAvail, 0&) <> 0 Then
                     While lTotalBytesAvail > 0
                         ' Get the available data from the buffer
+                        Erase baOutput
                         If lTotalBytesAvail > BUFSIZE Then
                             If ReadFile(hPipeReadSep, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0& Then
                                 lTotalBytesAvail = 0
@@ -448,6 +482,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         ' Get any final data from the pipe buffer
         If PeekNamedPipe(hPipeRead, 0&, 0&, 0&, lTotalBytesAvail, 0&) <> 0 Then
             While lTotalBytesAvail > 0
+                Erase baOutput
                 If lTotalBytesAvail > BUFSIZE Then
                     If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0& Then
                         lTotalBytesAvail = 0
@@ -504,6 +539,7 @@ Public Function GetCommandOutput(sOutput As String, sCommandLine As String, Opti
         If blnSepErr Then
             If PeekNamedPipe(hPipeReadSep, 0&, 0&, 0&, lTotalBytesAvail, 0&) <> 0 Then
                 While lTotalBytesAvail > 0
+                    Erase baOutput
                     If lTotalBytesAvail > BUFSIZE Then
                         If ReadFile(hPipeReadSep, baOutput(0), BUFSIZE, lBytesRead, ByVal 0&) = 0& Then
                             lTotalBytesAvail = 0
