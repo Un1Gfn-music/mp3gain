@@ -3847,7 +3847,7 @@ Private Sub Form_Load()
     strCurLanguageFileName = UCase$(mnuLanguage(intCurLanguage).Tag)
     
     blnBackEndOK = False
-    lngRetVal = GetCommandOutput(sBlah, strAppPath & "mp3gain /v", strAppPath, False, True)
+    lngRetVal = GetCommandOutput(sBlah, strAppPath & "mp3gain /v", strAppPath, False, True, False)
     intVer = InStr(LCase$(sBlah), "version")
     If intVer > 0 Then
         intVerLen = Len(Mid$(sBlah, intVer + 8)) - 2
