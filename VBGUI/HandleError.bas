@@ -2,7 +2,7 @@ Attribute VB_Name = "basHandleError"
 '
 '  HandleError.bas - Simple error log writer for MP3GainGUI
 '
-'  Copyright (C) 2003 Glen Sawyer
+'  Copyright (C) 2001-2004 Glen Sawyer
 '
 '  This library is free software; you can redistribute it and/or
 '  modify it under the terms of the GNU Lesser General Public

@@ -12,6 +12,7 @@ Attribute VB_Name = "basCommDialog"
 ' Waite Group Press, 1996
 
 'Modifications as marked by Glen Sawyer
+Option Explicit
 
 Type tagOPENFILENAME
     lStructSize As Long

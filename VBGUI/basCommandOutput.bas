@@ -130,7 +130,7 @@ Private Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" ( _
   ByVal bInheritHandles As Long, _
   ByVal dwCreationFlags As Long, _
   lpEnvironment As Any, _
-  ByVal lpCurrentDriectory As String, _
+  ByVal lpCurrentDirectory As String, _
   lpStartupInfo As STARTUPINFO, _
   lpProcessInformation As PROCESS_INFORMATION) As Long
 
@@ -166,14 +166,14 @@ Private Declare Function OemToCharBuff Lib "user32" Alias "OemToCharBuffA" ( _
 Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, _
     ByVal dwMilliseconds As Long) As Long
     
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
+Public Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
     (Destination As Any, _
      Source As Any, _
      ByVal Length As Long)
 
 Private Const WAIT_TIMEOUT = &H102&
 
-#If GLENDEBUG Then
+'#If GLENDEBUG Then
 Public Function BSTRtoUniBytes(strIn As String, bytOut() As Byte) As Long
     Dim lngBytes As Long
     
@@ -185,7 +185,7 @@ Public Function BSTRtoUniBytes(strIn As String, bytOut() As Byte) As Long
     
     BSTRtoUniBytes = lngBytes
 End Function
-#End If
+'#End If
 
 Public Function BytesToBSTR(bytIn() As Byte, lngBytes As Long) As String
     Dim bytOut() As Byte

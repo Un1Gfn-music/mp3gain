@@ -604,6 +604,7 @@ Begin VB.Form frmMain
          End
          Begin VB.Menu mnuDeleteTags 
             Caption         =   "Remove Tags from files"
+            Enabled         =   0   'False
          End
       End
       Begin VB.Menu mnuLogs 
@@ -747,6 +748,12 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuPopupRemoveTags 
          Caption         =   "Remove Tags from files"
       End
+      Begin VB.Menu mnuSep24 
+         Caption         =   "-"
+      End
+      Begin VB.Menu mnuPopupPlayFile 
+         Caption         =   "Play mp3 file"
+      End
    End
    Begin VB.Menu mPopupSys 
       Caption         =   "&SysTray"
@@ -767,7 +774,7 @@ Attribute VB_Exposed = False
 '
 '  frmMain.frm - Big, ugly main form for MP3GainGUI
 '
-'  Copyright (C) 2003 Glen Sawyer
+'  Copyright (C) 2001-2004 Glen Sawyer
 '
 '  This library is free software; you can redistribute it and/or
 '  modify it under the terms of the GNU Lesser General Public
@@ -3993,27 +4000,27 @@ Private Sub Form_Load()
     lstvMain.ColumnHeaders.Add 1, "chPathFile", _
         GetLocalString("frmMain.LCL_COLUMN_PATH_FILE", "Path\File")
         lstvMain.ColumnHeaders.Add 2, "chVolume", _
-        GetLocalString("frmMain.LCL_COLUMN_VOLUME", "Volume")
+        GetLocalString("frmMain.LCL_COLUMN_VOLUME", "Volume"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 3, "chClip", _
-        GetLocalString("frmMain.LCL_COLUMN_CLIPPING", "clipping")
+        GetLocalString("frmMain.LCL_COLUMN_CLIPPING", "clipping"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 4, "chRadioGain", _
-        GetLocalString("frmMain.LCL_COLUMN_RADIO_GAIN", "Track Gain")
+        GetLocalString("frmMain.LCL_COLUMN_RADIO_GAIN", "Track Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 5, "chRadioClip", _
-        GetLocalString("frmMain.LCL_COLUMN_RADIO_CLIP", "clip(Track)")
+        GetLocalString("frmMain.LCL_COLUMN_RADIO_CLIP", "clip(Track)"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 6, "chMaxNoClip", _
-        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_NOCLIP", "Max Noclip Gain")
+        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_NOCLIP", "Max Noclip Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 7, "chAlbumVolume", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_VOLUME", "Album Volume")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_VOLUME", "Album Volume"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 8, "chAlbumGain", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_GAIN", "Album Gain")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_GAIN", "Album Gain"), , lvwColumnRight
         lstvMain.ColumnHeaders.Add 9, "chAlbumClip", _
-        GetLocalString("frmMain.LCL_COLUMN_ALBUM_CLIP", "clip(Album)")
+        GetLocalString("frmMain.LCL_COLUMN_ALBUM_CLIP", "clip(Album)"), , lvwColumnCenter
         lstvMain.ColumnHeaders.Add 10, "chPath", _
         GetLocalString("frmMain.LCL_COLUMN_PATH", "Path")
         lstvMain.ColumnHeaders.Add 11, "chFile", _
         GetLocalString("frmMain.LCL_COLUMN_FILE", "File")
         lstvMain.ColumnHeaders.Add 12, "chMaxAmp", _
-        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_AMPLITUDE", "Curr Max Amp")
+        GetLocalString("frmMain.LCL_COLUMN_MAXIMUM_AMPLITUDE", "Curr Max Amp"), , lvwColumnRight
     
     intDefOrder = GetSetting("MP3GainAnalysis", "StartUp", "PathFileDisplay", PATHFILE)
     Select Case intDefOrder
@@ -4353,6 +4360,17 @@ Private Sub lstvMain_ColumnClick(ByVal ColumnHeader As MSComctlLib.ColumnHeader)
     
 lstvMain_ColumnClick_Error:
     HandleError "lstvMain_ColumnClick"
+End Sub
+
+Private Sub lstvMain_DblClick()
+    Dim itmX As ListItem
+    
+    For Each itmX In lstvMain.ListItems
+        If itmX.Selected Then
+            Call ShellExecute(0&, vbNullString, itmX.Key, vbNullString, vbNullString, vbNormalFocus)
+        End If
+    Next
+    
 End Sub
 
 Private Sub lstvMain_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -4742,6 +4760,8 @@ Private Sub mnuLanguage_Click(Index As Integer)
     mnuPopupConstantGain.Caption = mnuConstantGain.Caption
     mnuPopupMaxNoclipGain.Caption = mnuMaxNoClipGain.Caption
     mnuPopupGroupNoclip.Caption = mnuGroupNoClip.Caption
+    mnuPopupRemoveTags.Caption = mnuDeleteTags.Caption
+    mnuPopupUndoGain.Caption = mnuUndoGain.Caption
     
     diffProg = lblFileProg.Left
     If (lblTotProg.Left < diffProg) Then diffProg = lblTotProg.Left
@@ -4940,6 +4960,10 @@ End Sub
 
 Private Sub mnuPopupMaxNoclipGain_Click()
     mnuMaxNoClipGain_Click
+End Sub
+
+Private Sub mnuPopupPlayFile_Click()
+    lstvMain_DblClick
 End Sub
 
 Private Sub mnuPopupRadio_Click()
