@@ -1,5 +1,5 @@
 Type=Exe
-Object={831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0; MSCOMCTL.OCX
+Object={831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0; mscomctl.ocx
 Module=basHandleError; HandleError.bas
 Module=BrowseDirectorysOnly; Get Directory Dialog.bas
 Form=frmResetWarn.frm
@@ -23,8 +23,8 @@ Module=basLocalizer; basLocalizer.bas
 Module=basCommandOutput; basCommandOutput.bas
 Form=frmSkipTagsWarn.frm
 Module=basUnicodeFileFind; basUnicodeFileFind.bas
-ResFile32="MP3Gain.RES"
 Module=basFixUnicodeFileName; basFixUnicodeFileName.bas
+ResFile32="MP3Gain.RES"
 IconForm="frmMain"
 Startup="frmMain"
 HelpFile="MP3Gain.chm"
@@ -42,7 +42,7 @@ AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Snelg Enterprises"
 VersionFileDescription="MP3Gain GUI"
-VersionLegalCopyright="Copyright © 2004 Glen Sawyer"
+VersionLegalCopyright="Copyright © 2001-2004 Glen Sawyer"
 VersionProductName="MP3Gain GUI"
 CondComp="GLENDEBUG = 0"
 CompilationType=0

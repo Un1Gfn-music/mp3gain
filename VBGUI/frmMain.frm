@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "mscomctl.ocx"
 Begin VB.Form frmMain 
    Caption         =   "MP3 Gain"
    ClientHeight    =   6405
@@ -774,7 +774,7 @@ Attribute VB_Exposed = False
 '
 '  frmMain.frm - Big, ugly main form for MP3GainGUI
 '
-'  Copyright (C) 2003 Glen Sawyer
+'  Copyright (C) 2001-2004 Glen Sawyer
 '
 '  This library is free software; you can redistribute it and/or
 '  modify it under the terms of the GNU Lesser General Public
