@@ -317,12 +317,13 @@ Private Sub Form_Load()
     Me.Caption = Replace(GetLocalString("frmAbout.LCL_ABOUT_PROGRAM", "About %%programName%%"), "%%programName%%", App.Title)
     lblVersion.Caption = Replace(GetLocalString("frmAbout.LCL_VERSION_NUMBER", "Version %%versionNumber%%"), "%%versionNumber%%", App.Major & "." & App.Minor & "." & App.Revision)
     lblTitle.Caption = App.Title
-    lngRetVal = GetCommandOutput(sBlah, strAppPath & "mp3gain /v", strAppPath, False, True, False)
+    lngRetVal = GetCommandOutput(sBlah, strAppPath & strBackEndName & " /v", strAppPath, False, True, False)
     intVer = InStr(LCase$(sBlah), "version")
     If intVer > 0 Then
         intVerLen = Len(Mid$(sBlah, intVer + 8)) - 2
         If intVerLen > 0 Then
             lblBackEndTitle.Visible = True
+            lblBackEndTitle.Caption = "Back end (" & strBackEndName & ".exe)"
             lblBackEndVersion.Caption = Replace(GetLocalString("frmAbout.LCL_VERSION_NUMBER", "Version %%versionNumber%%"), "%%versionNumber%%", Mid$(sBlah, intVer + 8, Len(Mid$(sBlah, intVer + 8)) - 2))
             lblBackEndVersion.Visible = True
         End If

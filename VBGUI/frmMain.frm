@@ -1595,9 +1595,9 @@ Public Function AddSingleFile(strName As String) As String
             blnHaveTag = False
             
             If blnHaveUnicode Then
-                strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strNewKeyVal & """"
+                strCmdCheckTag = """" & strAppPath & strBackEndName & """ /o /s c """ & strNewKeyVal & """"
             Else
-                strCmdCheckTag = """" & strAppPath & "mp3Gain"" /o /s c """ & strName & """"
+                strCmdCheckTag = """" & strAppPath & strBackEndName & """ /o /s c """ & strName & """"
             End If
             
             If mnuSkipTags.Checked Or mnuReCalcTags.Checked Or mnuSkipTagsWhileAdding.Checked Then
@@ -2138,7 +2138,7 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
     Dim strBlah As String
     Dim lngRetVal As Long
     
-    strCmd = """" & strAppPath & "mp3Gain"" /o "
+    strCmd = """" & strAppPath & strBackEndName & """ /o "
     
     If mnuKeepTime.Checked Then
         strCmd = strCmd & "/p "
@@ -2154,6 +2154,10 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
     
     If mnuReCalcTags.Checked Then
         strCmd = strCmd & "/s r "
+    End If
+    
+    If blnUseTempFiles Then
+        strCmd = strCmd & "/t "
     End If
     
     If mnuReckless.Checked Then
@@ -2190,9 +2194,9 @@ Private Sub SingleAlbum(strAlbum As String, Optional blnFromGain As Boolean = Fa
     
     If (lngRetVal <> 0) And (Not blnCancel) Then
         If strBlah <> "" Then
-            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
         Else
-            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
         End If
     End If
     blnDoingAlbum = False
@@ -2380,7 +2384,7 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                     End If
                 End If
                 
-                strCmd = """" & strAppPath & "mp3Gain"" /o "
+                strCmd = """" & strAppPath & strBackEndName & """ /o "
                 
                 If mnuKeepTime.Checked Then
                     strCmd = strCmd & "/p "
@@ -2400,6 +2404,10 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                 
                 If mnuReCalcTags.Checked Then
                     strCmd = strCmd & "/s r "
+                End If
+                
+                If blnUseTempFiles Then
+                    strCmd = strCmd & "/t "
                 End If
                 
                 For Each itmX In lstvMain.ListItems
@@ -2430,9 +2438,9 @@ Private Sub Album(Optional blnFromGain As Boolean = False)
                 
                 If (lngRetVal <> 0) And (Not blnCancel) Then
                     If strBlah <> "" Then
-                        LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                        LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                     Else
-                        LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                        LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                     End If
                 End If
                 blnDoingAlbum = False
@@ -2572,7 +2580,7 @@ Private Sub AlbumGain()
 
                     Refresh
                     strBlah = ""
-                    strCmd = """" & strAppPath & "mp3gain"" /g " & mp3Inf.AlbumMp3Gain & " "
+                    strCmd = """" & strAppPath & strBackEndName & """ /g " & mp3Inf.AlbumMp3Gain & " "
                     If blnUseTempFiles Then
                         strCmd = strCmd & "/t "
                     End If
@@ -2618,9 +2626,9 @@ Private Sub AlbumGain()
                     ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                             Else
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                             End If
                         End If
                     Else
@@ -2762,7 +2770,7 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
     For Each itmX In lstvMain.ListItems
         If ((Not mnuSelectedFiles.Checked) Or (itmX.Checked)) And (itmX.Tag = "Y") Then
             If Not blnCancel Then
-                strCmd = """" & strAppPath & "mp3Gain"" "
+                strCmd = """" & strAppPath & strBackEndName & """ "
                 
                 strDBChange = Format$(CDbl(intGainChange) * 1.505, "0.0")
                 If blnSingleChannel Then
@@ -2838,9 +2846,9 @@ Private Sub ApplyConstGain(intGainChange As Integer, _
                 ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                         Else
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                         End If
                     End If
                 Else
@@ -2903,7 +2911,7 @@ Private Sub RadioSingleFile(itmX As ListItem, mp3Inf As Mp3Info)
         "Analyzing %%filename%%"), "%%filename%%", itmX.Text)
     Refresh
     strBlah = ""
-    strCmd = """" & strAppPath & "mp3gain"" /o "
+    strCmd = """" & strAppPath & strBackEndName & """ /o "
     
     If mnuKeepTime.Checked Then
         strCmd = strCmd & "/p "
@@ -2923,6 +2931,10 @@ Private Sub RadioSingleFile(itmX As ListItem, mp3Inf As Mp3Info)
     
     If mnuReCalcTags.Checked Then
         strCmd = strCmd & "/s r "
+    End If
+    
+    If blnUseTempFiles Then
+        strCmd = strCmd & "/t "
     End If
     
     
@@ -3184,7 +3196,7 @@ Private Sub RadioGain()
 
                     Refresh
                     
-                    strCmd = """" & strAppPath & "mp3gain"" /g " & intGainChange & " "
+                    strCmd = """" & strAppPath & strBackEndName & """ /g " & intGainChange & " "
                     
                     If blnUseTempFiles Then
                         strCmd = strCmd & "/t "
@@ -3231,9 +3243,9 @@ Private Sub RadioGain()
                     ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                             Else
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                             End If
                         End If
                     Else
@@ -3523,7 +3535,7 @@ Private Sub MaxNoClipGain()
                     
                     Refresh
                     strBlah = ""
-                    strCmd = """" & strAppPath & "mp3gain"" /g " & mp3Inf.MaxNoclipMp3Gain & " "
+                    strCmd = """" & strAppPath & strBackEndName & """ /g " & mp3Inf.MaxNoclipMp3Gain & " "
                     If blnUseTempFiles Then
                         strCmd = strCmd & "/t "
                     End If
@@ -3569,9 +3581,9 @@ Private Sub MaxNoClipGain()
                     ElseIf lngRetVal <> 0 Then
                         If Not blnCancel Then
                             If strBlah <> "" Then
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                             Else
-                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                                LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                             End If
                         End If
                     Else
@@ -3915,23 +3927,41 @@ Private Sub Form_Load()
     blnBackEndOK = False
     blnHaveAACGain = False
     
-    lngRetVal = GetCommandOutput(sBlah, strAppPath & "mp3gain /v", strAppPath, False, True, False)
+    strBackEndName = "aacgain"
     
-    If LCase$(Left$(sBlah, 7)) = "aacgain" Then
-        blnHaveAACGain = True
-    End If
+    lngRetVal = GetCommandOutput(sBlah, strAppPath & strBackEndName & " /v", strAppPath, False, True, False)
     
     intVer = InStr(LCase$(sBlah), "version")
     If intVer > 0 Then
         intVerLen = Len(Mid$(sBlah, intVer + 8)) - 2
         If intVerLen > 0 Then
             blnBackEndOK = True
+            blnHaveAACGain = True
         End If
     End If
+    
+    If Not blnBackEndOK Then 'aacgain.exe not available. Check mp3gain.exe
+        strBackEndName = "mp3gain"
+        
+        lngRetVal = GetCommandOutput(sBlah, strAppPath & strBackEndName & " /v", strAppPath, False, True, False)
+        
+        If LCase$(Left$(sBlah, 7)) = "aacgain" Then
+            blnHaveAACGain = True
+        End If
+        
+        intVer = InStr(LCase$(sBlah), "version")
+        If intVer > 0 Then
+            intVerLen = Len(Mid$(sBlah, intVer + 8)) - 2
+            If intVerLen > 0 Then
+                blnBackEndOK = True
+            End If
+        End If
+    End If
+    
     If Not blnBackEndOK Then
-        MsgBox Replace(GetLocalString("frmMain.LCL_NO_BACK_END_1", "%%BACKENDFILE%% NOT FOUND. You will not be able to analyze or change your mp3 files."), "%%BACKENDFILE%%", strAppPath & "mp3gain.exe") & _
+        MsgBox Replace(GetLocalString("frmMain.LCL_NO_BACK_END_1", "%%BACKENDFILE%% NOT FOUND. You will not be able to analyze or change your mp3 files."), "%%BACKENDFILE%%", strAppPath & strBackEndName & ".exe") & _
                vbCrLf & vbCrLf & _
-               GetLocalString("frmMain.LCL_NO_BACK_END_2", "If you copied or moved MP3GainGUI.exe to this new folder, then either re-copy MP3GainGUI.exe into this new folder as a shortcut to the old folder, or move mp3gain.exe into this new folder.")
+               GetLocalString("frmMain.LCL_NO_BACK_END_2", "If you copied or moved MP3GainGUI.exe to this new folder, then either re-copy MP3GainGUI.exe into this new folder as a shortcut to the old folder, or move " & strBackEndName & ".exe into this new folder.")
     End If
     
     fillCaptions Me
@@ -5853,10 +5883,10 @@ On Error GoTo DeleteFileTags_Error
     For Each itmX In lstvMain.ListItems
         If ((Not mnuSelectedFiles.Checked) Or (itmX.Checked)) And (itmX.Tag = "Y") Then
             If Not blnCancel Then
-                strCmd = """" & strAppPath & "mp3Gain"" /o /s d "
+                strCmd = """" & strAppPath & strBackEndName & """ /o /s d "
                 
                 stbStat.Panels(1).Text = Replace(GetLocalString("frmMain.LCL_REMOVING_TAGS", _
-                    "Removing MP3Gain tags from %%filename%%"), _
+                    "Removing tags from %%filename%%"), _
                     "%%filename%%", itmX.Text)
                             
                 If Not blnShowFileStatus Then
@@ -5865,6 +5895,10 @@ On Error GoTo DeleteFileTags_Error
                 
                 If mnuKeepTime.Checked Then
                     strCmd = strCmd & "/p "
+                End If
+                
+                If blnUseTempFiles Then
+                    strCmd = strCmd & "/t "
                 End If
                 
                 If blnHaveUnicode Then
@@ -5896,9 +5930,9 @@ On Error GoTo DeleteFileTags_Error
                 ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                         Else
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                         End If
                     End If
                 Else
@@ -5938,10 +5972,10 @@ On Error GoTo UndoFileGain_Error
     For Each itmX In lstvMain.ListItems
         If ((Not mnuSelectedFiles.Checked) Or (itmX.Checked)) And (itmX.Tag = "Y") Then
             If Not blnCancel Then
-                strCmd = """" & strAppPath & "mp3Gain"" /o /u "
+                strCmd = """" & strAppPath & strBackEndName & """ /o /u "
                 
                 stbStat.Panels(1).Text = Replace(GetLocalString("frmMain.LCL_UNDOING_CHANGES", _
-                    "Un-doing MP3Gain changes to %%filename%%"), _
+                    "Un-doing gain changes to %%filename%%"), _
                     "%%filename%%", itmX.Text)
                             
                 If blnUseTempFiles Then
@@ -5994,9 +6028,9 @@ On Error GoTo UndoFileGain_Error
                 ElseIf lngRetVal <> 0 Then
                     If Not blnCancel Then
                         If strBlah <> "" Then
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe") & ":" & vbCrLf & strBlah
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe") & ":" & vbCrLf & strBlah
                         Else
-                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running mp3gain.exe")
+                            LogErr GetLocalString("frmMain.LCL_BACKEND_ERROR", "Error running " & strBackEndName & ".exe")
                         End If
                     End If
                 Else

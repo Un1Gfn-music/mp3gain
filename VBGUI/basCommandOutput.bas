@@ -30,6 +30,7 @@ Public blnCancel As Boolean
 Public blnAllowProcessCancel As Boolean
 Public lngThreadPriority As Long
 Public strAppPath As String
+Public strBackEndName As String
 Public strAppDrive As String
 
 #If GLENDEBUG Then
