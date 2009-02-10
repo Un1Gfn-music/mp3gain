@@ -1,0 +1,79 @@
+<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<html>
+
+<head>
+
+<title>ゲインの変更 メニュー</title>
+
+<link rel="StyleSheet" href="NewDefault.css">
+
+</head>
+
+<body>
+
+<h3>ゲインの変更 メニュー</h3>
+
+<hr>
+<b>ゲインの変更</b>      
+メニューには下記の項目があり、これらはファイルリスト中での右クリックからも利用できます。(<a href="#Popup">注記</a>):
+<p>
+
+<table>
+  <colgroup>
+<col style="FONT-WEIGHT: bold; WIDTH: 33.72%">
+<col style="WIDTH: 66.27%">
+
+<tr>
+<td>トラックゲインの適用 <span style="WHITE-SPACE: nowrap">(Ctrl-G)</span></td>
+<td>        
+ <a href="File_List.htm"> ファイルリスト</a>   
+中の全ファイルを、 <a href="Target_Volume.htm"> 目標音量</a> に合わせて音量調整します。</td></tr>
+
+<tr>
+<td>アルバムゲインの適用 <span style="WHITE-SPACE: nowrap">(Ctrl-B)</span></td>
+<td><a href="File_List.htm"> ファイルリスト</a>   
+ 中の全ファイルを、アルバム全体の音量が <a href="Target_Volume.htm"> 
+ 目標音量</a> に合うように音量調整します。</td></tr>
+<tr>
+<td><a name="ConstantGain"></a> 
+一定値ゲインの適用... <span style="WHITE-SPACE: nowrap">(Ctrl-O)</span></td>
+<td><strong>一定値ゲイン</strong> ダイアログが開きます。
+<p>
+<center><img height="274" src="ConstantGain.jpg" width="255"></center>
+<p>ここでは、 <a href="Target_Volume.htm"> 目標音量</a> 
+ の代わりにゲイン変更の絶対値をdBで指定することが出来ます。 
+ <strong>dB</strong>欄が希望するゲインの値になるようにスライダーを動かして調整してください。 調整のステップは1.5 dB単位です。
+<p>MP3がステレオか二重音声の場合、左右の一方のみにゲイン変更を適用することも出来ます。 
+「<strong>一方のチャンネルにだけ適用</strong>」&nbsp;ボックスにチェックし、適用したいチャンネルのラジオボタンをクリックして選択してください。</p> 
+</td></tr>
+
+<tr>
+<td>各ファイルに最大無クリップゲインの適用 <span style="WHITE-SPACE: nowrap">(Ctrl-X)</span></td>
+<td><i>  ( <a href="Options_menu.htm#Maximizing">最大化</a> 機能が有効なときだけ表示されます)</i><br>
+ 各MP3ファイルがクリッピングしない範囲で最大の音量になるように、各ファイルのゲインを変更します。
+<p>
+<i>注記</i> - これは、全てのMP3を同じ音量に揃えるのに<strong>良い方法ではありません</strong>。 
+ 異なるMP3では、各ファイルの最大振幅と平均振幅の比はそれぞれ全く異なります。<br>
+ これは、貴方がMP3間の音量の違いが気にならず、ただ各ファイルの音量を可能な限り大きくしたい場合に使う機能です。</p>
+</td></tr>
+
+<tr>
+<td>アルバムに最大無クリップゲインの適用 <span style="WHITE-SPACE: nowrap">(Ctrl-L)</span></td>
+<td><i>  ( <a href="Options_menu.htm#Maximizing">最大化</a>   機能が有効なときだけ表示されます)</i><br>
+ ファイルリスト中の各フォルダ毎に、フォルダ中のどのMP3もクリッピングを起こさない最大ゲイン値を見つけ、その値を使ったゲイン変更をフォルダ中の全MP3に適用します。
+<p>私自身はMP3のミックスCDを焼くときにこの機能を使用します。 
+ 私はCDに焼く予定の全てのMP3を1つのフォルダにコピーし、フォルダ上で<strong>トラックゲイン</strong>        
+を適用し、それから更にフォルダ上でこの機能を使用します。 こうする事で、MP3は全て同じ音量で、しかしどのMP3もクリッピングすることなくCD全体では可能な限り大きい音量になります。</p>           
+</td></tr>
+
+<tr>
+<td>ゲイン変更の取り消し</td>
+<td> <a href="Tags.htm">タグ</a>が利用可能なら（即ち「オプション - タグ情報 - 無視する」がチェックされていない）、このメニューオプションを選ぶことでリスト中のMP3ファイルに対する全てのゲイン変更が元に戻ります。</td>
+</tr>
+</table>
+
+<p>
+<a name="Popup"></a><b>(注記)</b> - 右クリックのポップアップメニューを使う場合、MP3Gain は選択された機能を、 <a href="File_List.htm" > ファイルリスト</a>中の現在選択されているファイルに対してのみ実行します。</p>
+</body>
+</html>
