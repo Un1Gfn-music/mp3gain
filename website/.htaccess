@@ -1,1 +1,3 @@
 AddType application/octet-stream .ini
+RewriteEngine on
+RewriteRule CVS(/.*)?$ - [F]
