@@ -1,0 +1,4 @@
+mp3gain/*.exe
+mp3gain/*.o
+mp3gain/mpglibDBL/*.o
+

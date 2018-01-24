@@ -83,14 +83,18 @@
 #include <fcntl.h>
 #include <string.h>
 
-/* I tweaked the mpglib library just a bit to spit out the raw
- * decoded double values, instead of rounding them to 16-bit integers.
- * Hence the "mpglibDBL" directory
- */
-
 #ifndef asWIN32DLL
-#include "mpglibDBL/interface.h"
 
+/* Was in lame.h. */
+#include <stdarg.h>
+
+/* Used to be part of decode_i386. */
+unsigned char maxAmpOnly;
+/* layer3.c */
+unsigned char *minGain;
+unsigned char *maxGain;
+
+#include <mpg123.h>
 #include "gain_analysis.h"
 #endif
 
@@ -1404,13 +1408,40 @@ void dumpTaginfo(struct MP3GainTagInfo *info) {
   fprintf(stderr, "haveMinMaxGain      %d  min %d  max %d\n",info->haveMinMaxGain, info->minGain, info->maxGain);
 }
 
+void convert_decout(float *decout, int nprocsamp, int nchan, Float_t *lsamples, Float_t *rsamples)
+{
+	int n;
+	if(nchan == 1)
+		for(n=0; n<nprocsamp; ++n)
+			*lsamples++ = 32768.0* *decout++;
+	else if(nchan == 2)
+		for(n=0; n<nprocsamp; ++n)
+		{
+			*lsamples++ = 32767.0 * *decout++;
+			*rsamples++ = 32767.0 * *decout++;
+		}
+}
+
+float find_maxsample(float *decout, int nsamples, float maxsample)
+{
+	int n;
+	for(n=0; n<nsamples; ++n)
+	{
+		float val = *decout++ * 32768.0;
+		if(val < 0)
+			val = -val;
+		if(val > maxsample)
+			maxsample = val;
+	}
+	return maxsample;
+}
 
 #ifdef WIN32
 int __cdecl main(int argc, char **argv) { /*make sure this one is standard C declaration*/
 #else
 int main(int argc, char **argv) {
 #endif
-	MPSTR mp;
+	mpg123_handle *mh = NULL;
 	unsigned long ok;
 	int mode;
 	int crcflag;
@@ -1466,6 +1497,7 @@ int main(int argc, char **argv) {
     AACGainHandle *aacInfo;
 #endif
 
+	mpg123_init();
     gSuccess = 1;
 
     if (argc < 2) {
@@ -1873,7 +1905,6 @@ int main(int argc, char **argv) {
 #ifdef AACGAIN
         AACGainHandle aacH = aacInfo[mainloop];
 #endif
-        memset(&mp, 0, sizeof(mp));
 
 	  // if the entire Album requires some kind of recalculation, then each track needs it
 	  tagInfo[mainloop].recalc |= albumRecalc; 
@@ -2069,9 +2100,11 @@ int main(int argc, char **argv) {
 #ifdef AACGAIN
             if (!aacH)
 #endif
-    			InitMP3(&mp);
+    			mh = mpg123_new(NULL, NULL);
+				mpg123_param(mh, MPG123_ADD_FLAGS, MPG123_FORCE_FLOAT, 0.);
+				mpg123_open_feed(mh);
 			if (tagInfo[mainloop].recalc == 0) {
-				maxsample = tagInfo[mainloop].trackPeak * 32768.0;
+				maxsample = tagInfo[mainloop].trackPeak * 32767.0;
 				maxgain = tagInfo[mainloop].maxGain;
 				mingain = tagInfo[mainloop].minGain;
 				ok = !0;
@@ -2242,12 +2275,8 @@ int main(int argc, char **argv) {
 								nchan = (mode == 3) ? 1 : 2;
 
 								if (inbuffer >= bytesinframe) {
-									lSamp = lsamples;
-									rSamp = rsamples;
-									maxSamp = &maxsample;
 									maxGain = &maxgain;
 									minGain = &mingain;
-									procSamp = 0;
 									if ((tagInfo[mainloop].recalc & AMP_RECALC) || (tagInfo[mainloop].recalc & FULL_RECALC)) {
 #ifdef WIN32
 #ifndef __GNUC__
@@ -2259,7 +2288,26 @@ int main(int argc, char **argv) {
 												   think it's worth the trouble */
 #endif
 #endif
-											decodeSuccess = decodeMP3(&mp,curframe,bytesinframe,&nprocsamp);
+											size_t decbytes = 0;
+											unsigned char *decout;
+											/* Get gain values directly, not from decoder. */
+											scanFrameGain();
+											mpg123_feed(mh, curframe, bytesinframe);
+											decodeSuccess = mpg123_decode_frame(mh, NULL, &decout, &decbytes);
+											if(decodeSuccess == MPG123_NEW_FORMAT)
+											{
+												int enc = 0, channels = 0;
+												mpg123_getformat(mh, NULL, &channels, &enc);
+												if(enc != MPG123_ENC_FLOAT_32 || channels != nchan)
+												{
+													fprintf(stderr, "Unexpected format returned by libmpg123.\n");
+													exit(1);
+												}
+												decodeSuccess = mpg123_decode_frame(mh, NULL, &decout, &decbytes);
+											}
+											nprocsamp = decbytes / sizeof(float) / nchan;
+											convert_decout((float*)decout, nprocsamp, nchan, lsamples, rsamples);
+											maxsample = find_maxsample((float*)decout, nprocsamp*nchan, maxsample);
 #ifdef WIN32
 #ifndef __GNUC__
 										}
@@ -2273,12 +2321,12 @@ int main(int argc, char **argv) {
 #endif
 									} else { /* don't need to actually decode frame, 
 												just scan for min/max gain values */
-										decodeSuccess = !MP3_OK;
+										decodeSuccess = !MPG123_OK;
 										scanFrameGain();//curframe);
 									}
-									if (decodeSuccess == MP3_OK) {
+									if (decodeSuccess == MPG123_OK) {
 										if ((!maxAmpOnly)&&(tagInfo[mainloop].recalc & FULL_RECALC)) {
-											if (AnalyzeSamples(lsamples,rsamples,procSamp/nchan,nchan) == GAIN_ANALYSIS_ERROR) {
+											if (AnalyzeSamples(lsamples,rsamples,nprocsamp,nchan) == GAIN_ANALYSIS_ERROR) {
 												fprintf(stderr,"Error analyzing further samples (max time reached)          \n");
 												analysisError = !0;
 												ok = 0;
@@ -2430,7 +2478,8 @@ int main(int argc, char **argv) {
 #ifdef AACGAIN
             if (!aacH)
 #endif
-    			ExitMP3(&mp);
+			mpg123_delete(mh);
+			mh = NULL;
 			fflush(stderr);
 			fflush(stdout);
 			if (inf)
