@@ -765,6 +765,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
 			inf = NULL;
             passError(MP3GAIN_UNSPECIFED_ERROR, 3,
                 "\nCan't open ", outfilename, " for temp writing\n");
+			NowWriting = 0;
 			return M3G_ERR_CANT_MAKE_TMP;
 		} 
  
@@ -775,10 +776,13 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
   }
 
   if (inf == NULL) {
-	  if (UsingTemp && (outf != NULL))
+	  if (UsingTemp && (outf != NULL)) {
 		  fclose(outf);
+		  outf = NULL;
+	  }
 	  passError( MP3GAIN_UNSPECIFED_ERROR, 3,
           "\nCan't open ", filename, " for modifying\n");
+	  NowWriting = 0;
 	  return M3G_ERR_CANT_MODIFY_FILE;
   }
   else {
@@ -971,6 +975,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
 		fclose(inf);
 		if (UsingTemp) {
 			fclose(outf);
+			outf = NULL;
 			deleteFile(outfilename);
 			free(outfilename);
 			passError(MP3GAIN_CANCELLED,2,"Cancelled processing of ",filename);
@@ -980,6 +985,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
 		}
 		if (saveTime) 
 		  fileTime(filename, setStoredTime);		
+		NowWriting = 0;
 		return;
 	}
 #endif
@@ -1044,12 +1050,14 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
 		fclose(outf);
 		fclose(inf);
 		inf = NULL;
+		outf = NULL;
         
         if (outlength != inlength) {
             deleteFile(outfilename);
 			passError( MP3GAIN_UNSPECIFED_ERROR, 3,
                 "Not enough temp space on disk to modify ", filename, 
                 "\nEither free some space, or do not use \"temp file\" option\n");
+            NowWriting = 0;
             return M3G_ERR_NOT_ENOUGH_TMP_SPACE;
         }
         else {
@@ -1058,6 +1066,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
 				deleteFile(outfilename); //try to delete tmp file
 				passError( MP3GAIN_UNSPECIFED_ERROR, 3,
                     "Can't open ", filename, " for modifying\n");
+			    NowWriting = 0;
 			    return M3G_ERR_CANT_MODIFY_FILE;
 		    }
 		    if (moveFile(outfilename, filename)) {
@@ -1066,6 +1075,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
                     "\nThe mp3 was correctly modified, but you will need to re-name ", 
                     outfilename, " to ", filename, 
                     " yourself.\n");
+		            NowWriting = 0;
 			    return M3G_ERR_RENAME_TMP;
 		    };
 		    if (saveTime)
