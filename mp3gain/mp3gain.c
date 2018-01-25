@@ -2043,6 +2043,7 @@ int main(int argc, char **argv) {
 					} else {
 						fprintf(stderr,"No undo information in %s\n",argv[mainloop]);
 					}
+					gSuccess = 0;
 				}
 		  }
 	  }
@@ -2113,8 +2114,9 @@ int main(int argc, char **argv) {
 #else
 		  if ((inf == NULL)&&(tagInfo[mainloop].recalc > 0)) {
 #endif
-			  fprintf(stdout, "Can't open %s for reading\n",argv[mainloop]);
-              fflush(stdout);
+			  fprintf(stderr, "Can't open %s for reading\n",argv[mainloop]);
+			  fflush(stderr);
+			  gSuccess = 0;
 		  }
 		  else {
 #ifdef AACGAIN
@@ -2201,8 +2203,9 @@ int main(int argc, char **argv) {
 				if (!ok) {
 #endif
                     if (!BadLayer) {
-						fprintf(stdout,"Can't find any valid MP3 frames in file %s\n",argv[mainloop]);
-                        fflush(stdout);
+						fprintf(stderr,"Can't find any valid MP3 frames in file %s\n",argv[mainloop]);
+						fflush(stderr);
+						gSuccess = 0;
                     }
 				}
 				else {
@@ -2237,8 +2240,8 @@ int main(int argc, char **argv) {
 								(Xingcheck[0] == 'I' && Xingcheck[1] == 'n' && Xingcheck[2] == 'f' && Xingcheck[3] == 'o')) {
 							bitridx = (curframe[2] >> 4) & 0x0F;
 							if (bitridx == 0) {
-								fprintf(stdout, "%s is free format (not currently supported)\n",curfilename);
-								fflush(stdout);
+								fprintf(stderr, "%s is free format (not currently supported)\n",curfilename);
+								fflush(stderr);
 								ok = 0;
 							}
 							else {
@@ -2281,8 +2284,8 @@ int main(int argc, char **argv) {
 						while (ok) {
 							bitridx = (curframe[2] >> 4) & 0x0F;
 							if (bitridx == 0) {
-								fprintf(stdout,"%s is free format (not currently supported)\n",curfilename);
-								fflush(stdout);
+								fprintf(stderr,"%s is free format (not currently supported)\n",curfilename);
+								fflush(stderr);
 								ok = 0;
 							}
 							else {
@@ -2383,8 +2386,9 @@ int main(int argc, char **argv) {
 					}
 
 					if (dBchange == GAIN_NOT_ENOUGH_SAMPLES) {
-						fprintf(stdout,"Not enough samples in %s to do analysis\n",argv[mainloop]);
-                        fflush(stdout);
+						fprintf(stderr,"Not enough samples in %s to do analysis\n",argv[mainloop]);
+                        			fflush(stderr);
+						gSuccess = 0;
 						numFiles--;
 					}
 					else {
@@ -2525,8 +2529,8 @@ int main(int argc, char **argv) {
 		}
 
 		if (dBchange == GAIN_NOT_ENOUGH_SAMPLES) {
-			fprintf(stdout,"Not enough samples in mp3 files to do analysis\n");
-            fflush(stdout);
+			fprintf(stderr,"Not enough samples in mp3 files to do analysis\n");
+			fflush(stderr);
 		}
 		else {
 			Float_t maxmaxsample;
