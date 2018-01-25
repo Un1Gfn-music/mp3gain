@@ -133,7 +133,7 @@ unsigned char buffer[BUFFERSIZE];
 
 int writeself = 0;
 int QuietMode = 0;
-int UsingTemp = 0;
+int UsingTemp = 1;
 int NowWriting = 0;
 double lastfreq = -1.0;
 
@@ -1059,7 +1059,7 @@ int changeGain(char *filename AACGAIN_ARG(AACGainHandle aacH), int leftgainchang
             deleteFile(outfilename);
 			passError( MP3GAIN_UNSPECIFED_ERROR, 3,
                 "Not enough temp space on disk to modify ", filename, 
-                "\nEither free some space, or do not use \"temp file\" option\n");
+                "\nEither free some space, or switch off \"temp file\" option with -T\n");
             NowWriting = 0;
             return M3G_ERR_NOT_ENOUGH_TMP_SPACE;
         }
@@ -1347,10 +1347,11 @@ void fullUsage(char *progname) {
 		fprintf(stderr,"\t%cd <n> - modify suggested dB gain by floating-point n\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%cc - ignore clipping warning when applying gain\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%co - output is a database-friendly tab-delimited list\n",SWITCH_CHAR);
-		fprintf(stderr,"\t%ct - writes modified data to temp file, then deletes original\n",SWITCH_CHAR);
-		fprintf(stderr,"\t     instead of modifying bytes in original file\n");
+		fprintf(stderr,"\t%ct - mp3gain writes modified mp3 to temp file, then deletes original \n",SWITCH_CHAR);
+		fprintf(stderr,"\t     instead of modifying bytes in original file (default)\n");
+		fprintf(stderr,"\t%cT - mp3gain directly modifies mp3 file (opposite of %ct)\n",SWITCH_CHAR,SWITCH_CHAR);
 #ifdef AACGAIN
-		fprintf(stderr,"\t     A temp file is always used for AAC files.\n");
+		fprintf(stderr,"\t     Ignored for AAC files.\n");
 #endif
 		fprintf(stderr,"\t%cq - Quiet mode: no status messages\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%cp - Preserve original file timestamp\n",SWITCH_CHAR);
@@ -1727,8 +1728,11 @@ int main(int argc, char **argv) {
                     break;
 
 				case 't':
-				case 'T':
 					UsingTemp = !0;
+					break;
+
+				case 'T':
+					UsingTemp = 0;
 					break;
 
 				case 'u':
