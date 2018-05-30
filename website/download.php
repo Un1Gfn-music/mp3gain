@@ -24,6 +24,11 @@ $Csx = $Cx;
 $Csy = $Cy;
 $Csz = $Cz."_r2";
 
+# Linux-specific source files
+$Lx = 1;
+$Ly = 6;
+$Lz = 2;
+
 $downloads = array ( "MP3Gain-Windows %28Stable%29/$Gsx.$Gsy.$Gsz" => array ("MP3Gain-Windows (Stable)", array (
 							array ("mp3gain-win-".$Gsx."_".$Gsy."_".$Gsz.".exe","Normal MP3Gain install for version $Gsx.$Gsy.$Gsz<br>
 			<b>This is what most people will want to download.</b>"),
@@ -36,7 +41,7 @@ $downloads = array ( "MP3Gain-Windows %28Stable%29/$Gsx.$Gsy.$Gsz" => array ("MP
 							array ("mp3gain-win-full-".$Gsx."_".$Gsy."_".$Gsz.".zip","Full MP3Gain (i.e. Normal MP3Gain plus VB run-time files), but with no installer"),
 							array ("mp3gain-win-gui-".$Gsx."_".$Gsy."_".$Gsz."-src.zip","Visual Basic source files used to create the MP3Gain GUI.
 		     The GUI is just a front end for the command-line program mp3gain.exe, so if you want to completely re-compile MP3Gain from scratch, then
-		     you'll also need the <a href=\"http://prdownloads.sourceforge.net/mp3gain/mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip?download\">mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip</a> file."))),
+		     you'll also need the <a href=\"https://sourceforge.net/projects/mp3gain/files/mp3gain/$Cx.$Cy.$Cz/mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip?download\">mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip</a> file."))),
 					"MP3Gain-Windows %28Beta%29/$Gx.$Gy.$Gz" => array ("MP3Gain-Windows (Beta)", array (
 							array ("mp3gain-win-".$Gx."_".$Gy."_".$Gz.".exe","Normal MP3Gain install for version $Gx.$Gy.$Gz <b>Do not</b> use this version unless you really need the experimental Unicode support. There seem to be some cases where this version accidentally shortens the filename. I'm still figuring it out."),
 							array ("mp3gain-win-".$Gx."_".$Gy."_".$Gz.".zip","Normal MP3Gain, but with no installer"),
@@ -48,9 +53,9 @@ $downloads = array ( "MP3Gain-Windows %28Stable%29/$Gsx.$Gsy.$Gsz" => array ("MP
 							array ("mp3gain-win-full-".$Gx."_".$Gy."_".$Gz.".zip","Full MP3Gain (i.e. Normal MP3Gain plus VB run-time files), but with no installer"),
 							array ("mp3gain-win-gui-".$Gx."_".$Gy."_".$Gz."-src.zip","Visual Basic source files used to create the MP3Gain GUI.
 		     The GUI is just a front end for the command-line program mp3gain.exe, so if you want to completely re-compile MP3Gain from scratch, then
-		     you'll also need the <a href=\"http://prdownloads.sourceforge.net/mp3gain/mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip?download\">mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip</a> file."))),
+		     you'll also need the <a href=\"https://sourceforge.net/projects/mp3gain/files/mp3gain/$Cx.$Cy.$Cz/mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip?download\">mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip</a> file."))),
 					"mp3gain/$Cx.$Cy.$Cz" => array ("mp3gain (command-line back end)", array (
-							array ("mp3gain-".$Csx."_".$Csy."_".$Csz."-src.zip","C++ files (plus Visual C++ project information files) used to create the mp3gain.exe back end"),
+							array ("mp3gain-".$Lx."_".$Ly."_".$Lz."-src.zip","C++ files (plus Visual C++ project information files) used to create the mp3gain.exe back end", "mp3gain/{$Lx}.{$Ly}.{$Lz}"),
 							array ("mp3gain-dos-".$Cx."_".$Cy."_".$Cz.".zip","Command-line only version of mp3gain. If you download any of the Windows MP3Gain files above, this file is included."))));
 ?>
 <h1 class="hide">Downloads</h1>
@@ -68,7 +73,7 @@ There are two Mac ports that I know of: <a href="http://homepage.mac.com/beryrin
 		foreach ($section[1] as $item) { ?>
 	<tr>
 		<td nowrap class="tdBorder">
-			<a href="https://sourceforge.net/projects/mp3gain/files/<?php echo $sectionUrl ?>/<?php echo $item[0]?>/download"><?php echo $item[0]?></a></td>
+			<a href="https://sourceforge.net/projects/mp3gain/files/<?php echo empty($item[2]) ? $sectionUrl : $item[2] ?>/<?php echo $item[0]?>/download"><?php echo $item[0]?></a></td>
 		<td class="tdBorder"><?php echo $item[1]?></td>
 	</tr>
 <?php
