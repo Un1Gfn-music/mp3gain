@@ -34,7 +34,7 @@ Anyhow, check it out if you're interested. But don't ask me any questions ;)
 <p>
 <strong>Latest news:</strong><br />
 <em>21 Sep 2018</em><br />
-Well <strong>THAT</strong> is a long gap between news items. José Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
+Well <strong>THAT</strong> is a long gap between news items. Jose&#769; Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
 </p>
 <hr />
 <em>10 May 2009</em><br />

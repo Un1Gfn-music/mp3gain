@@ -8,7 +8,7 @@ include("start.php");
 <h1 class="hide">News</h1>
 <p>
 <em>21 Sep 2018</em><br />
-Well <strong>THAT</strong> is a long gap between news items. José Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
+Well <strong>THAT</strong> is a long gap between news items. Jose&#769; Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
 </p>
 <hr />
 <p>
