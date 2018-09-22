@@ -7,6 +7,11 @@ include("start.php");
 ?>
 <h1 class="hide">News</h1>
 <p>
+<em>21 Sep 2018</em><br />
+Well <strong>THAT</strong> is a long gap between news items. José Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
+</p>
+<hr />
+<p>
 <em>25 May 2009</em><br />
 The people who made the program SuperMp3Normalizer have chosen to re-name their product "MP3Gain PRO". I had nothing to do with this product, so don't email me support questions ;)
 </p>

@@ -33,6 +33,10 @@ Anyhow, check it out if you're interested. But don't ask me any questions ;)
 <hr />
 <p>
 <strong>Latest news:</strong><br />
+<em>21 Sep 2018</em><br />
+Well <strong>THAT</strong> is a long gap between news items. José Carlos has updated the <a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> translation.
+</p>
+<hr />
 <em>10 May 2009</em><br />
 Zan Smogavc and his friend have translated MP3Gain into <a href="lang/Slovenscina.mp3gain.ini">Slovenian</a>.
 </p>
