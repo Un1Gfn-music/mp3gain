@@ -1,4 +1,7 @@
 mp3gain/*.exe
 mp3gain/*.o
 mp3gain/mpglibDBL/*.o
+/installer/vb
+/mp3gain/.vs/
+/website/.idea
 

@@ -15,39 +15,52 @@ If you want to translate the MP3Gain <em>Help file</em> into another language, t
 <table>
 <tr><td valign="top" width="33%">
 	<ul>
+        <li>Arabic</li>
 		<li>Bulgarian</li>
 		<li>Catalan</li>
-		<li>Czech</li>
 		<li>Chinese (Simplified)</li>
 		<li>Chinese (Traditional)</li>
 		<li>Croatian</li>
+        <li>Czech</li>
+        <li>Danish</li>
+        <li>Dutch</li>
 		<li>Finnish</li>
-		<li>French (<strong>UPDATED BELOW</strong>)</li>
+		<li>French</li>
+        <li>German</li>
+        <li>Greek (*)</li>
 	</ul>
 </td>
 <td valign="top" width="33%">
 	<ul>
-		<li>German</li>
-		<li>Greek (*)</li>
 		<li>Hebrew</li>
 		<li>Hellenic (*)</li>
 		<li>Hungarian</li>
+        <li>Indonesian</li>
 		<li>Italian</li>
 		<li>Japanese</li>
 		<li>Korean</li>
-		<li>Nederlands (**)</li>
+        <li>Latvian</li>
+        <li>Lithuanian</li>
+        <li>Macedonian</li>
+        <li>Norwegian</li>
+        <li>Polish</li>
+        <li>Portuguese</li>
 	</ul>
 </td>
 <td valign="top" width="33%">
 	<ul>
-		<li>Polish</li>
-		<li>Portuguese</li>
+        <li>Portuguese (Brazilian)</li>
 		<li>Romanian</li>
 		<li>Russian</li>
 		<li>Serbian</li>
 		<li>Slovak</li>
+        <li>Slovenian</li>
 		<li>Spanish</li>
+        <li>Swedish</li>
+        <li>Tagalog</li>
+        <li>Thai</li>
 		<li>Turkish</li>
+        <li>Ukrainian</li>
 		<li>Uzbek</li>
 	</ul>
 </td></tr>
@@ -57,29 +70,12 @@ If you want to translate the MP3Gain <em>Help file</em> into another language, t
 	But I've been sent two separate translations and <em>I</em> don't know Greek,
 	so I can't tell if one is &quot;better&quot;
 </p>
-<p>(**) - There is also an outdated &quot;Dutch&quot; translation included in the installer. The &quot;Nederlands&quot; translation matches the <a href="help/mp3gain-nederlands.zip">&quot;Help&quot; file</a> translation.
-</p>
 <p>
 
 <b>New Translations (not yet included in main download)</b><br />
 Download the file and place it in your MP3Gain folder. The new language will appear in the "Languages" menu in MP3Gain.
 <ul>
-    <li><a href="lang/Arabic.mp3gain.ini">Arabic</a></li>
-    <li><a href="lang/Espanol.mp3gain.ini">Spanish</a> (updated 2010/9/9)</li>
-    <li><a href="lang/French.mp3gain.ini">French</a> (updated for version 1.2.5)</li>
-    <li><a href="lang/Portugues_Brasil.mp3gain.ini">Brazilian Portuguese</a> (updated 2018/09/21)</li>
-    <li><a href="lang/Danish.mp3gain.ini">Danish</a></li>
-    <li><a href="lang/Indonesia.mp3gain.ini">Indonesian</a></li>
-    <li><a href="lang/Latvian.mp3gain.ini">Latvian</a></li>
-    <li><a href="lang/Lithuanian.mp3gain.ini">Lithuanian</a></li>
-    <li><a href="lang/Macedonian.mp3gain.ini">Macedonian</a></li>
-    <li><a href="lang/Norsk.mp3gain.ini">Norwegian</a></li>
-    <li><a href="lang/Slovak.mp3gain.ini">Slovak</a> (updated for version 1.2.5)</li>
-    <li><a href="lang/Slovenscina.mp3gain.ini">Slovenian</a></li>
-    <li><a href="lang/Svenska.mp3gain.ini">Swedish</a></li>
-    <li><a href="lang/Tagalog.mp3gain.ini">Tagalog</a></li>
-    <li><a href="lang/Thai.mp3gain.ini">Thai</a></li>
-    <li><a href="lang/Ukrainian.mp3gain.ini">Ukrainian</a></li>
+    <li><em>Installer fully updated. No additional translations available right now.</em></li>
 </ul>
 </p>
 <p>

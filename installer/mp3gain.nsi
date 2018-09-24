@@ -5,7 +5,7 @@
 
 !define VER_MAJOR 1
 !define VER_MINOR 3
-!define VER_REL 2
+!define VER_REL 4
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -340,6 +340,11 @@ SectionEnd
 
 !endif
 
+Section "Arabic"
+SetOutPath $INSTDIR
+File "otherlang\Arabic.mp3gain.ini"
+SectionEnd
+
 Section "Bulgarian"
 SetOutPath $INSTDIR
 File "otherlang\Bulgarian.mp3gain.ini"
@@ -348,6 +353,11 @@ SectionEnd
 Section "Català"
 SetOutPath $INSTDIR
 File "otherlang\Català.mp3gain.ini"
+SectionEnd
+
+Section "Chinese(Simplified)"
+SetOutPath $INSTDIR
+File "otherlang\Chinese(Simplified).mp3gain.ini"
 SectionEnd
 
 Section "Chinese(Traditional)"
@@ -365,9 +375,14 @@ SetOutPath $INSTDIR
 File "otherlang\Cesky.mp3gain.ini"
 SectionEnd
 
+Section "Danish"
+SetOutPath $INSTDIR
+File "otherlang\Danish.mp3gain.ini"
+SectionEnd
+
 Section "Dutch"
 SetOutPath $INSTDIR
-File "otherlang\Dutch.mp3gain.ini"
+File "otherlang\Nederlands.mp3gain.ini"
 SectionEnd
 
 Section "Finnish"
@@ -401,19 +416,24 @@ SetOutPath $INSTDIR
 File "otherlang\Greek.mp3gain.ini"
 SectionEnd
 
-Section "Hellenic"
-SetOutPath $INSTDIR
-File "otherlang\Hellenic.mp3gain.ini"
-SectionEnd
-
 Section "Hebrew"
 SetOutPath $INSTDIR
 File "otherlang\Hebrew.mp3gain.ini"
 SectionEnd
 
+Section "Hellenic"
+SetOutPath $INSTDIR
+File "otherlang\Hellenic.mp3gain.ini"
+SectionEnd
+
 Section "Hungarian"
 SetOutPath $INSTDIR
 File "otherlang\Magyar.mp3gain.ini"
+SectionEnd
+
+Section "Indonesian"
+SetOutPath $INSTDIR
+File "otherlang\Indonesian.mp3gain.ini"
 SectionEnd
 
 Section "Italian"
@@ -426,9 +446,29 @@ SetOutPath $INSTDIR
 File "otherlang\Japanese.mp3gain.ini"
 SectionEnd
 
-Section "Nederlands"
+Section "Korean"
 SetOutPath $INSTDIR
-File "otherlang\Nederlands.mp3gain.ini"
+File "otherlang\Korean.mp3gain.ini"
+SectionEnd
+
+Section "Latvian"
+SetOutPath $INSTDIR
+File "otherlang\Latvian.mp3gain.ini"
+SectionEnd
+
+Section "Lithuanian"
+SetOutPath $INSTDIR
+File "otherlang\Lithuanian.mp3gain.ini"
+SectionEnd
+
+Section "Macedonian"
+SetOutPath $INSTDIR
+File "otherlang\Macedonian.mp3gain.ini"
+SectionEnd
+
+Section "Norwegian"
+SetOutPath $INSTDIR
+File "otherlang\Norsk.mp3gain.ini"
 SectionEnd
 
 Section "Polish"
@@ -470,12 +510,37 @@ SectionEnd
 
 Section "Slovak"
 SetOutPath $INSTDIR
-File "otherlang\Slovensky.mp3gain.ini"
+File "otherlang\Slovak.mp3gain.ini"
+SectionEnd
+
+Section "Slovenian"
+SetOutPath $INSTDIR
+File "otherlang\Slovenscina.mp3gain.ini"
+SectionEnd
+
+Section "Swedish"
+SetOutPath $INSTDIR
+File "otherlang\Svenska.mp3gain.ini"
+SectionEnd
+
+Section "Tagalog"
+SetOutPath $INSTDIR
+File "otherlang\Tagalog.mp3gain.ini"
+SectionEnd
+
+Section "Thai"
+SetOutPath $INSTDIR
+File "otherlang\Thai.mp3gain.ini"
 SectionEnd
 
 Section "Turkish"
 SetOutPath $INSTDIR
 File "otherlang\Turkish.mp3gain.ini"
+SectionEnd
+
+Section "Ukrainian"
+SetOutPath $INSTDIR
+File "otherlang\Ukrainian.mp3gain.ini"
 SectionEnd
 
 Section "Uzbek"
